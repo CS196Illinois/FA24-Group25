@@ -82,29 +82,35 @@ class Ball(pygame.sprite.Sprite):
                 (SCREEN_HEIGHT - self.surf.get_height()) / 2
             )
         )
-        self.speed = 10
+        self.speed = 10 #Speed
+
+        #These are meant to always add to be 1 and represent how much of the velocity is horizontal and how much is vertical
+        #Hopefully they reduce the amount of trig I have to do and I think it will be easier to change how hitting the ball
+        #with the edge of your paddle alters the angle that the ball travels afterwards, like in the original pong
         self.proportion_x = 0.5
         self.proportion_y = -0.5
-        self.game_running = True #FIXME this doesn't work right now
+        #For the purposes of 'music pong' the absolute value of the x-velocity component of the ball will have to remain constant
+        #in order to do any alignment of the ball bounces with a beat or subdivision
+
+        self.game_running = True #FIXME this doesn't work like I want it to right now
     
     def update(self):
 
         self.rect.move_ip(self.speed * self.proportion_x, self.speed * self.proportion_y)
+        
         if (self.rect.right < 0 | self.rect.left > SCREEN_WIDTH):
             self.game_running = False
             self.kill()
     
-        if (self.rect.top <= (self.surf.get_height() / 2)):
-            self.proportion_y = self.proportion_y * -1
-            collision_sound.play()
-        if (self.rect.top >= (SCREEN_HEIGHT - self.surf.get_height() / 2)):
+        #If the ball hits the top or bottom, flip the y velocity modifier and play a sound
+        if (self.rect.top <= (self.surf.get_height() / 2) or self.rect.top >= (SCREEN_HEIGHT - self.surf.get_height() / 2)):
             self.proportion_y = self.proportion_y * -1
             collision_sound.play()
 
-
-    def flipVelocity(self):
+    def flipVelocity(self): #When the ball runs into a paddle, flip the x velocity modifier and play a sound
         self.proportion_x = self.proportion_x * -1
         collision_sound.play()
+        #self.speed += 1.5
 
 #Initialize sounds (to change defaults, call before pygame.init)
 pygame.mixer.init()
@@ -114,7 +120,7 @@ pygame.init()
 
 
 #Add and load sounds
-collision_sound = pygame.mixer.Sound("bonk-sound-effect.FLAC")
+collision_sound = pygame.mixer.Sound("bonk-sound-effect-1.mp3")
 
 #Create screen object of size SCREEN_WIDTH x SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -175,7 +181,7 @@ while ball.game_running:
     #Update visual frame
     pygame.display.flip()
 
-    #Ensure program maintains a rate of 30 fps
+    #Ensure program maintains a rate of 60 fps
     clock.tick(60)
 
     #Check if the ball has collided with either player
