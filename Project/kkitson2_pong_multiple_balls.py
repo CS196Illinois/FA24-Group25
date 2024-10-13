@@ -5,7 +5,7 @@ pygame.init()
 
 #initials
 WIDTH, HEIGHT = 1000, 600
-wn = pygame.display.set_mode((WIDTH, HEIGHT))
+wn = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Pong with Three Balls")
 run = True
 
