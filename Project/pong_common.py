@@ -52,11 +52,12 @@ class Ball(pygame.sprite.Sprite):
         self.x_vel = math.cos(self.angle) * self.speed
         self.y_vel = math.sin(self.angle) * self.speed
 
-    def collide(self, paddles):
+    def collide(self, paddles, dt):
         for i in paddles:
             if i.rect.colliderect(self.rect):
                 offset = (self.rect.y + self.rect.height - i.rect.y) / (i.rect.height + self.rect.height)
                 self.x_vel *= -1
+                self.rect.move_ip(self.x_vel*dt, -self.y_vel*dt)
                 phi = 0.25 * math.pi * (2 * offset - 1)
                 self.y_vel= self.speed * math.sin(phi)
                 self.angle = math.atan2(self.y_vel, self.x_vel)
@@ -69,10 +70,10 @@ class Ball(pygame.sprite.Sprite):
         self.rect.centery = int(SCREEN_HEIGHT/2)
 
 class Paddle(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, controls):
+    def __init__(self, x_pos, y_pos, controls, size=75, thresh = 700):
         super(Paddle, self).__init__()
 
-        self.surf = pygame.Surface((10, 75))
+        self.surf = pygame.Surface((10, size))
 
         self.surf.fill((255,255,255))
 
@@ -83,9 +84,10 @@ class Paddle(pygame.sprite.Sprite):
 
         self.controls = controls
         self.locked = False
+        self.thresh = thresh
 
     def update(self, pressed_keys, bally, ballx, dt):
-        if len(self.controls) == 0 and ballx > 700:
+        if len(self.controls) == 0 and ballx > self.thresh and ballx < self.rect.x:
             # Make overshoots possible on the part of the CPU
             if self.rect.top > bally:
                 self.vel = -self.max_vel

@@ -1,3 +1,4 @@
+
 import pygame
 from pygame.constants import (
     K_UP,
@@ -17,8 +18,10 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 running = True
 
 ball = Ball()
-player = Paddle(SCREEN_WIDTH/10, SCREEN_HEIGHT/2, (K_UP, K_DOWN))
-player2 = Paddle((SCREEN_WIDTH * 9)/10, SCREEN_HEIGHT/2, ())
+player = Paddle(SCREEN_WIDTH/10, SCREEN_HEIGHT/2, (K_w, K_s), size=60)
+player2 = Paddle((SCREEN_WIDTH * 4)/10, SCREEN_HEIGHT/2, (K_UP, K_DOWN), size=60)
+cpu1 = Paddle((SCREEN_WIDTH * 9)/10, SCREEN_HEIGHT/2, (), size=30, thresh = 800)
+cpu2 = Paddle((SCREEN_WIDTH * 6)/10, SCREEN_HEIGHT/2, (), size=30, thresh= 500)
 score = pygame.font.Font(FONT, 20)
 score_text = score.render(f"{GameState.p1score} - {GameState.p2score}", False, (255, 255, 255))
 
@@ -28,10 +31,14 @@ all_sprites = pygame.sprite.Group()
 all_sprites.add(ball)
 all_sprites.add(player)
 all_sprites.add(player2)
+all_sprites.add(cpu1)
+all_sprites.add(cpu2)
 
 paddles = pygame.sprite.Group()
 paddles.add(player)
 paddles.add(player2)
+paddles.add(cpu1)
+paddles.add(cpu2)
 
 dt = 0
 
