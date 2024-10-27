@@ -17,9 +17,16 @@ from pygame.locals import (
 )
 
 
-#Define screen size
+#Define screen size (this will be scaled/stretched to be fullscreen later anyway)
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 600
+
+#Music pong variables
+distanceToNextPaddle = (SCREEN_WIDTH - 25) - (SCREEN_WIDTH / 2 + 5) # starting distance upon game launch
+
+
+beatsPerMinute = 120
+subdivision = 2 # 1: whole note subdivision, 2: half note subdivision, 4: quarter note subdivision and so on
 
 
 #Define a Player object by extending pygame.sprite.Sprite
@@ -72,6 +79,7 @@ class Player2(pygame.sprite.Sprite):
         self.rect.top = coordy
         self.rect.left = coordx
 
+
 class Ball(pygame.sprite.Sprite):
     
     def __init__(self):
@@ -84,24 +92,22 @@ class Ball(pygame.sprite.Sprite):
                 (SCREEN_HEIGHT - self.surf.get_height()) / 2
             )
         )
-        self.speed = 8
-        self.proportion_y = (random.random() / 5) * 3 - 0.3
-        self.proportion_x = (1 - abs(self.proportion_y))
+        self.x_velocity = (distanceToNextPaddle * subdivision) / (120 * (120 / beatsPerMinute))
         self.run = True
+        self.last_hit = ""
         self.last_vertical_hit = ""
 
-        #These are meant to always add to be 1 and represent how much of the velocity is horizontal and how much is vertical
-        self.proportion_y = (random.random() / 5) * 3 - 0.3
-        self.proportion_x = (1 - abs(self.proportion_y))
+        #This, rather than proportion of vertical movement, now represents the y velocity that is independent from x velocity
+        self.y_velocity = (random.random() / 5) * 30 - 0.3
         #For the purposes of 'music pong' the absolute value of the x-velocity component of the ball will have to remain constant
         #in order to do any alignment of the ball bounces with a beat or subdivision
 
     
     def update(self):
 
-        self.rect.move_ip(self.speed * self.proportion_x, self.speed * self.proportion_y)
+        self.rect.move_ip(self.x_velocity, self.y_velocity)
         
-        if (self.rect.right < 0):
+        if (self.rect.right < 0): # If the ball exits the left side of the screen, a point is scored and the ball is reset
             scoreText.updateScore(1)
             player1.set_position(10, (SCREEN_HEIGHT - player1.surf.get_height()) / 2)
             player2.set_position(SCREEN_WIDTH - (player2.surf.get_width()) - 10 , (SCREEN_HEIGHT - player2.surf.get_height()) / 2)
@@ -113,11 +119,11 @@ class Ball(pygame.sprite.Sprite):
                     (SCREEN_HEIGHT - self.surf.get_height()) / 2
                 )
             )
-            self.speed = 10
-            self.proportion_y = random.randint(-3,3) / 10.0
-            self.proportion_x = -1 * (1 - abs(self.proportion_y))
+            self.last_hit = ""
+            self.x_velocity = (((SCREEN_WIDTH - 25) - (ball.rect.x + ball.surf.get_width())) * subdivision) / (120 * (120 / beatsPerMinute))
+            self.y_velocity = (random.random()) * 4 - 2
 
-        elif (self.rect.left > SCREEN_WIDTH):
+        elif (self.rect.left > SCREEN_WIDTH): # If the ball exits the right side of the screen, a point is scored and the ball is reset
             scoreText.updateScore(0)
             player1.set_position(10, (SCREEN_HEIGHT - player1.surf.get_height()) / 2)
             player2.set_position(SCREEN_WIDTH - (player2.surf.get_width()) - 10 , (SCREEN_HEIGHT - player2.surf.get_height()) / 2)
@@ -129,35 +135,38 @@ class Ball(pygame.sprite.Sprite):
                     (SCREEN_HEIGHT - self.surf.get_height()) / 2
                 )
             )
-            self.speed = 8
-            self.proportion_y = (random.random() / 5) * 3 - 0.3
-            self.proportion_x = (1 - abs(self.proportion_y))
+            self.last_hit = ""
+            self.x_velocity = (((SCREEN_WIDTH - 25) - (ball.rect.x + ball.surf.get_width())) * subdivision) / (120 * (120 / beatsPerMinute)) * -1
+            self.y_velocity = (random.random()) * 6 - 3
     
         #If the ball hits the top or bottom, flip the y velocity modifier and play a sound
         if ((self.rect.top <= (self.surf.get_height() / 2)) & (self.last_vertical_hit != "top")):
-            self.proportion_y = self.proportion_y * -1
+            self.y_velocity = self.y_velocity * -1
             collision_sound.play()
             self.last_vertical_hit = "top"
         if ((self.rect.top >= (SCREEN_HEIGHT - self.surf.get_height() / 2)) & (self.last_vertical_hit != "bottom")):
-            self.proportion_y = self.proportion_y * -1
+            self.y_velocity = self.y_velocity * -1
             collision_sound.play()
             self.last_vertical_hit = "bottom"
 
 
     def flipVelocity(self, y_difference): #When the ball runs into a paddle
 
-        x_flip = self.proportion_x / abs(self.proportion_x) * -1 # x_flip will be -1 or 1 to represent the direction left/right that the ball is moving after the collision
         if (y_difference != 0):
             y_flip = y_difference / abs(y_difference) * -1 # y_flip will be -1 or 1 to represent the direction up/down that the ball is moving after the collision
         else: # since we can't divide by 0, if the ball lands in the exact center of the paddle (y_difference == 0), set y_difference to random float between 0.05 and -0.05
-            y_difference = random.random() / 10 - 0.05
+            y_difference = random.random() - 0.5
             y_flip = y_difference / abs(y_difference)
 
-        self.proportion_y = y_flip * (abs(y_difference) + 0.1) # proportion_y changes based on y_difference
-        self.proportion_x = x_flip * (1 - abs(self.proportion_y)) # x proportion changes so that x + y proportions add to 1
+        self.y_velocity = y_flip * (abs(y_difference) * 10 + 1) # y_velocity changes based on y_difference
 
+        self.changeVelocity(self.x_velocity / abs(self.x_velocity) * -1) # x_velocity changes based on subdivision and distance to next paddle
+        print("Velocity: " + str(self.x_velocity) + ", " + str(self.y_velocity))
         collision_sound.play()
-        self.speed += 0.5
+
+    def changeVelocity(self, direction): # Change the x velocity of the ball depending on the new subdivision      
+        print("Distance to next paddle: " + str(distanceToNextPaddle))       
+        self.x_velocity = (distanceToNextPaddle * subdivision) / (120 * (120 / beatsPerMinute)) * direction
 
 class Text(pygame.sprite.Sprite):
 
@@ -209,6 +218,7 @@ player2.set_position(SCREEN_WIDTH - (player2.surf.get_width()) - 10 , (SCREEN_HE
 
 #Instantiate ball
 ball = Ball()
+distanceToNextPaddle = (SCREEN_WIDTH - 25) - (ball.rect.x + ball.surf.get_width()) # Difference between left edge of right paddle and right edge of ball
 
 #Instantiate text
 scoreText = Text()
@@ -221,10 +231,9 @@ players.add(player2)
 
 
 
-#Setup a clock for decent frame rate
+#Setup a clock for setting a fixed frame rate
 clock = pygame.time.Clock()
 
-last_hit = ""
 
 #MAIN LOOP
 while ball.run:
@@ -269,13 +278,17 @@ while ball.run:
     clock.tick(60)
 
     #Check if the ball has collided with either player
-    if (pygame.sprite.collide_rect(ball, player1) & (last_hit != "left")):
+    if (pygame.sprite.collide_rect(ball, player1) & (ball.last_hit != "left")):
+        distanceToNextPaddle = (SCREEN_WIDTH - 25) - (ball.rect.x + ball.surf.get_width())
         ball.flipVelocity((player1.rect.y + (player1.surf.get_height() / 2)  - (ball.rect.y + (ball.surf.get_height() / 2))) / player1.surf.get_height())
-        last_hit = "left"
+        
+        ball.last_hit = "left"
         ball.last_vertical_hit = ""
-    if (pygame.sprite.collide_rect(ball, player2) & (last_hit != "right")):
+    if (pygame.sprite.collide_rect(ball, player2) & (ball.last_hit != "right")):
+        distanceToNextPaddle = ball.rect.x - 25
         ball.flipVelocity((player2.rect.y + (player2.surf.get_height() / 2)  - (ball.rect.y + (ball.surf.get_height() / 2))) / player2.surf.get_height())
-        last_hit = "right"
+        
+        ball.last_hit = "right"
         ball.last_vertical_hit = ""
 
 
