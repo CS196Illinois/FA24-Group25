@@ -1,4 +1,3 @@
-
 import pygame
 from pygame.constants import (
     K_UP,
@@ -43,7 +42,7 @@ paddles.add(cpu2)
 dt = 0
 
 while running:
-    screen.fill((0,0,0))
+    screen.fill((0,128,0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False

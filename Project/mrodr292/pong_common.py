@@ -58,7 +58,7 @@ class Ball(pygame.sprite.Sprite):
                 offset = (self.rect.y + self.rect.height - i.rect.y) / (i.rect.height + self.rect.height)
                 self.x_vel *= -1
                 self.rect.move_ip(self.x_vel*dt, -self.y_vel*dt)
-                phi = 0.25 * math.pi * (2 * offset - 1)
+                phi = 0.3 * math.pi * (2 * offset - 1)
                 self.y_vel= self.speed * math.sin(phi)
                 self.angle = math.atan2(self.y_vel, self.x_vel)
                 self.speed *= 1.01
