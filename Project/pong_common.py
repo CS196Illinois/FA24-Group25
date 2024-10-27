@@ -36,6 +36,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
         self.speed = 500.0
+        # self.acceleration = 0
         # not sure how you want to implement acceleration Sofia but I think that perhaps each hit with a paddle should
         # set ball speed to a max and then have the ball deccelerate to an arbitrary min
         self.angle = math.pi + random.randint(0, 1) * math.pi
