@@ -17,27 +17,30 @@ class Ball:
             self.velX *= -1.05
             self.velY += (self.rect.centery - self.rect.collideobjects(paddleList).rect.centery) * .03
     
+    # update ball position every frame
     def updatePos(self):
         self.rect.centerx += self.velX
         self.rect.centery += self.velY
+        # pull implementation
         if self.lastHit != None and keys[self.lastHit.keyPull]:
             if self.lastHit.rect.centery > self.rect.centery:
                 self.velY += .05
             if self.lastHit.rect.centery < self.rect.centery:
                 self.velY -= .05
 
+    def display(self):
+        screen.blit(self.sprite, self.rect)
+        # graphics for when ball is being pulled
+        if self.lastHit and keys[self.lastHit.keyPull]:
+            self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.lastHit.name + 'ball.png').convert(), (self.width,self.height))
+        else:
+            self.sprite = pygame.transform.scale(pygame.image.load('graphics/ball.png').convert(), (self.width,self.height))
+
     def reset(self, posX, posY, velX, velY):
         self.velX = velX
         self.velY = velY
         self.rect.center = (posX,posY)
         self.lastHit = None
-
-    def display(self):
-        screen.blit(self.sprite, self.rect)
-        if self.lastHit and keys[self.lastHit.keyPull]:
-            self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.lastHit.name + 'ball.png').convert(), (self.width,self.height))
-        else:
-            self.sprite = pygame.transform.scale(pygame.image.load('graphics/ball.png').convert(), (self.width,self.height))
 class Paddle:
     def __init__(self, posX, posY, width, height, speed, dashCooldownSeconds, keyUp, keyDown, keyDash, keyPull, name):
         self.speed = abs(speed)
@@ -57,12 +60,14 @@ class Paddle:
     def getRect(self):
         return self.rect
 
+    # update paddle position every frame
     def updatePos(self):
         self.timeSinceDash += 1/60
         if keys[self.keyUp]:
             self.rect.centery -= self.speed
         if keys[self.keyDown]:
             self.rect.centery += self.speed
+        # dash movement and cooldown implementation
         if self.timeSinceDash >= self.dashCooldownSeconds:
             if keys[self.keyDash]:
                 if keys[self.keyUp]:
@@ -78,6 +83,7 @@ class Paddle:
 
     def display(self):
         screen.blit(self.sprite, self.rect)
+        # graphics for when paddle is on dash cooldown or pulling
         if self.timeSinceDash < self.dashCooldownSeconds:
             if keys[self.keyPull]:
                 self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.name + 'cooldown.png').convert(), (self.width,self.height))
