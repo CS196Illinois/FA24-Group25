@@ -53,6 +53,10 @@ def run(settings):
                 for entity in all_sprites:
                     entity.reset()
 
+        if GameState.p2score > 5 or GameState.p1score > 5:
+            running = False
+            GameState.reset()
+
         ball.update(dt)
         ball.collide(paddles, dt)
         keys = pygame.key.get_pressed()
