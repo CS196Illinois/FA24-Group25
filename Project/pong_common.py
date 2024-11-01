@@ -11,7 +11,6 @@ SCREEN_HEIGHT = 600
 class GameState:
     p1score = 0
     p2score = 0
-    reset = False
 
     @staticmethod
     def score(player):
@@ -22,6 +21,11 @@ class GameState:
 
         event = pygame.event.Event(SCORE)
         pygame.event.post(event)
+
+    @staticmethod
+    def reset():
+        GameState.p1score = 0
+        GameState.p2score = 0
 
 
 # all behavior that the ball should be defined in here. can be extended if need be
