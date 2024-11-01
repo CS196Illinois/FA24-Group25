@@ -32,9 +32,9 @@ class Ball:
         screen.blit(self.sprite, self.rect)
         # graphics for when ball is being pulled
         if self.lastHit and keys[self.lastHit.keyPull]:
-            self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.lastHit.name + 'ball.png').convert(), (self.width,self.height))
+            self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.lastHit.name + 'ball.png').convert(), (self.width,self.height))
         else:
-            self.sprite = pygame.transform.scale(pygame.image.load('graphics/ball.png').convert(), (self.width,self.height))
+            self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/ball.png').convert(), (self.width,self.height))
 
     def reset(self, posX, posY, velX, velY):
         self.velX = velX
@@ -46,7 +46,7 @@ class Paddle:
         self.speed = abs(speed)
         self.width = width
         self.height = height
-        self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + name + '.png').convert(), (width,height))
+        self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + name + '.png').convert(), (width,height))
         self.rect = self.sprite.get_rect(center = (posX,posY))
         self.keyUp = keyUp
         self.keyDown = keyDown
@@ -86,14 +86,14 @@ class Paddle:
         # graphics for when paddle is on dash cooldown or pulling
         if self.timeSinceDash < self.dashCooldownSeconds:
             if keys[self.keyPull]:
-                self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.name + 'cooldown.png').convert(), (self.width,self.height))
+                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.name + 'cooldown.png').convert(), (self.width,self.height))
             else:
-                self.sprite = pygame.transform.scale(pygame.image.load('graphics/paddlecooldown.png').convert(), (self.width,self.height))
+                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/paddlecooldown.png').convert(), (self.width,self.height))
         else:
             if keys[self.keyPull]:
-                self.sprite = pygame.transform.scale(pygame.image.load('graphics/' + self.name + '.png').convert(), (self.width,self.height))
+                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.name + '.png').convert(), (self.width,self.height))
             else:
-                self.sprite = pygame.transform.scale(pygame.image.load('graphics/paddle.png').convert(), (self.width,self.height))
+                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/paddle.png').convert(), (self.width,self.height))
 
 import pygame
 import random
@@ -114,12 +114,12 @@ pygame.display.set_caption('pong')
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 50)
 
-title = pygame.transform.scale(pygame.image.load('graphics/title.png').convert(), (resX,resY))
-background = pygame.transform.scale(pygame.image.load('graphics/background.png').convert(), (resX,resY))
+title = pygame.transform.scale(pygame.image.load('steven43_graphics/title.png').convert(), (resX,resY))
+background = pygame.transform.scale(pygame.image.load('steven43_graphics/background.png').convert(), (resX,resY))
 
 ball = dict()
 for i in range(0,1):
-    ball[i] = Ball(resX * .5, resY * .5, -4, 0, resX * .017, resX * .017, 'graphics/ball.png')
+    ball[i] = Ball(resX * .5, resY * .5, -4, 0, resX * .017, resX * .017, 'steven43_graphics/ball.png')
 
 
 paddleL = Paddle(resX * .02, resY * .5, resX * .017, resY * .186, 6, 3, pygame.K_w, pygame.K_s, pygame.K_d, pygame.K_a, 'paddleL')
