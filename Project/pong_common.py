@@ -9,34 +9,30 @@ SCREEN_HEIGHT = 600
 
 # this class should handle game state, like scores, teams, etc
 class GameState:
-    p1score = 0
-    p2score = 0
+    def __init__(self):
+        self.p1score = 0
+        self.p2score = 0
 
-    @staticmethod
-    def score(player):
+    def score(self, player):
         if player == 1:
-            GameState.p1score += 1
+            self.p1score += 1
         else:
-            GameState.p2score += 1
+            self.p2score += 1
 
         event = pygame.event.Event(SCORE)
         pygame.event.post(event)
-
-    @staticmethod
-    def reset():
-        GameState.p1score = 0
-        GameState.p2score = 0
 
 
 # all behavior that the ball should be defined in here. can be extended if need be
 class Ball(pygame.sprite.Sprite):
     # Todo: update ball constructor to take size (and consider other useful additions)
-    def __init__(self):
+    def __init__(self, color):
         super(Ball, self).__init__()
 
         self.surf = pygame.Surface((15, 15))
 
-        self.surf.fill((255, 255, 255))
+        self.color = color
+        self.surf.fill((color))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
         self.speed = 500.0
@@ -49,12 +45,12 @@ class Ball(pygame.sprite.Sprite):
         self.locked = False
 
     # dt is time since last frame
-    def update(self, dt):
+    def update(self, dt, state):
         self.rect.move_ip(self.x_vel * dt, self.y_vel * dt)
         if self.rect.left < 0:
-            GameState.score(2)
+            state.score(2)
         elif self.rect.right > SCREEN_WIDTH:
-            GameState.score(1)
+            state.score(1)
         if self.rect.top < 0:
             self.angle = math.atan2(-self.y_vel, self.x_vel)
             self.rect.top = 0
@@ -81,7 +77,7 @@ class Ball(pygame.sprite.Sprite):
 
     # figured this might be useful boilerplate
     def set_speed(self, speed: int):
-        pass
+        self.speed = speed
 
     def reset(self):
         self.speed = 500

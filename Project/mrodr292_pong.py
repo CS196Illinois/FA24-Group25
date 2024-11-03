@@ -7,13 +7,14 @@ FONT = pygame.font.get_default_font()
 
 def run(settings):
     running = True
+    state = GameState()
 
-    ball = Ball()
+    ball = Ball((255, 255, 255))
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
     player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, ())
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
-        f"{GameState.p1score} - {GameState.p2score}", False, (255, 255, 255)
+        f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
     )
 
     clock = pygame.time.Clock()
@@ -34,20 +35,18 @@ def run(settings):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                GameState.reset()
 
             if event.type == SCORE:
                 score_text = score.render(
-                    f"{GameState.p1score} - {GameState.p2score}", False, (255, 255, 255)
+                    f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
                 )
                 for entity in all_sprites:
                     entity.reset()
 
-        if GameState.p2score > 5 or GameState.p1score > 5:
+        if state.p2score > 5 or state.p1score > 5:
             running = False
-            GameState.reset()
 
-        ball.update(dt)
+        ball.update(dt, state)
         ball.collide(paddles, dt)
         keys = pygame.key.get_pressed()
 
