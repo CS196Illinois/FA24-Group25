@@ -3,11 +3,13 @@ from pygame.constants import K_UP, K_DOWN, K_s, K_w
 from menu import Settings, MenuButton
 import mrodr292_pong
 import mrodr292_foosball
+import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
 
 pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
@@ -17,9 +19,13 @@ pong_button = MenuButton(
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
+music_button = MenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!"
+)
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
+menu_group.add(music_button)
 font = pygame.font.Font(FONT, 20)
 running = True
 
