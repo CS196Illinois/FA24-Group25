@@ -1,6 +1,10 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
+<<<<<<< HEAD
 from menu import Settings, MenuButton, SelectMenuButton
+=======
+from menu import Settings, MenuButton, ControlsButton, change_controls
+>>>>>>> 168ee18 (add changing controls button)
 import mrodr292_pong
 import mrodr292_foosball
 <<<<<<< HEAD
@@ -24,6 +28,7 @@ foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
 <<<<<<< HEAD
+<<<<<<< HEAD
 music_button = SelectMenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 =======
@@ -39,6 +44,21 @@ menu_group.add(music_button)
 =======
 menu_group.add(test_button)
 >>>>>>> 2effa20 (initial commit with common.py, added menu button)
+=======
+
+p1_controls = ControlsButton(
+    (SCREEN_WIDTH * 2) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 1
+)
+p2_controls = ControlsButton(
+    (SCREEN_WIDTH * 8) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 2
+)
+
+menu_group = pygame.sprite.Group()
+menu_group.add(pong_button)
+menu_group.add(foosball_button)
+menu_group.add(p1_controls)
+menu_group.add(p2_controls)
+>>>>>>> 168ee18 (add changing controls button)
 font = pygame.font.Font(FONT, 20)
 running = True
 
