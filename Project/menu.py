@@ -32,6 +32,19 @@ class SelectMenuButton(MenuButton):
     def __init__(self, x, y, action, text, input_param):
         super().__init__(x, y, action, text)
         self.input_param = input_param # in the case of music pong, this extra parameter is an int referring to the song to play
+
+class ControlsButton(MenuButton):
+    def __init__(self, x, y, action, player):
+        super().__init__(x, y, action, "")
+        self.player = player
+
+        if player == 1:
+            self.state = "W/S"
+        else:
+            self.state = "None"
+
+        self.text = f"Player {self.player}: {self.state}"
+
     def check_click(self, x, y, settings):
         if (
             x <= self.rect.right
