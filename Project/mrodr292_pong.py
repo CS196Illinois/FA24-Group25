@@ -11,7 +11,7 @@ def run(settings):
 
     ball = Ball((255, 255, 255))
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
-    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, ())
+    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
         f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
