@@ -9,7 +9,7 @@ pygame.init()
 class Ball(Ball):
     def __init__(self, color):
         super().__init__(color)
-        self.acceleration = -.0025
+        self.acceleration = -.005
 
     def collide(self, paddles, dt):
         print(self.speed)
@@ -24,13 +24,13 @@ class Ball(Ball):
                 phi = 0.3 * math.pi * (2 * offset - 1)
                 self.y_vel = self.speed * math.sin(phi)
                 self.angle = math.atan2(self.y_vel, self.x_vel)
-                self.speed = 800
+                self.speed = 900
 
 
 class Paddle(Paddle):
     def __init__(self, x_pos, y_pos, controls, size=75, thresh=700):
         super().__init__(x_pos, y_pos, controls, size=75, thresh=700)
-        self.acceleration = .025
+        self.acceleration = .01
 
     def update(self, pressed_keys, bally, ballx, dt):
         if len(self.controls) == 0 and ballx > self.thresh and ballx < self.rect.x:
