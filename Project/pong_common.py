@@ -26,20 +26,24 @@ class GameState:
 # all behavior that the ball should be defined in here. can be extended if need be
 class Ball(pygame.sprite.Sprite):
     # Todo: update ball constructor to take size (and consider other useful additions)
-    def __init__(self, color):
+    def __init__(self, color, image):
         super(Ball, self).__init__()
 
-        self.surf = pygame.Surface((15, 15))
+        if image is None:
+            self.surf = pygame.Surface((15, 15))
+            self.color = color
+            self.surf.fill((color))
+        else:
+            print("image")
+            self.surf = pygame.image.load(image)
 
-        self.color = color
-        self.surf.fill((color))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
         self.speed = 500.0
         # self.acceleration = 0
         # not sure how you want to implement acceleration Sofia but I think that perhaps each hit with a paddle should
         # set ball speed to a max and then have the ball deccelerate to an arbitrary min
-        self.angle = math.pi + random.randint(0, 1) * math.pi
+        self.angle = math.pi + random.randint(0, 1) * math.pi + (math.pi / 3)
         self.x_vel = self.speed * math.cos(self.angle)
         self.y_vel = self.speed * math.sin(self.angle)
         self.locked = False
@@ -81,7 +85,7 @@ class Ball(pygame.sprite.Sprite):
 
     def reset(self):
         self.speed = 500
-        self.angle = math.pi + random.randint(0, 1) * math.pi
+        self.angle = math.pi + random.randint(0, 1) * math.pi + (math.pi / 3)
         self.rect.centerx = int(SCREEN_WIDTH / 2)
         self.rect.centery = int(SCREEN_HEIGHT / 2)
 
