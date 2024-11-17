@@ -1,178 +1,177 @@
-class Ball:
-    def __init__(self, posX, posY, velX, velY, width, height, image):
-        self.velX = velX
-        self.velY = velY
-        self.width = width
-        self.height = height
-        self.sprite = pygame.transform.scale(pygame.image.load(image).convert(), (width,height))
-        self.rect = self.sprite.get_rect(center = (posX, posY))
-        self.lastHit = None
-        ballList.append(self)
-
-    def checkCollision(self):
-        if self.rect.top < 0 or self.rect.bottom > resY:
-            self.velY *= -1
-        if self.rect.collideobjects(paddleList) != None:
-            self.lastHit = self.rect.collideobjects(paddleList)
-            self.velX *= -1.05
-            self.velY += (self.rect.centery - self.rect.collideobjects(paddleList).rect.centery) * .03
-    
-    # update ball position every frame
-    def updatePos(self):
-        self.rect.centerx += self.velX
-        self.rect.centery += self.velY
-        # pull implementation
-        if self.lastHit != None and keys[self.lastHit.keyPull]:
-            if self.lastHit.rect.centery > self.rect.centery:
-                self.velY += .05
-            if self.lastHit.rect.centery < self.rect.centery:
-                self.velY -= .05
-
-    def display(self):
-        screen.blit(self.sprite, self.rect)
-        # graphics for when ball is being pulled
-        if self.lastHit and keys[self.lastHit.keyPull]:
-            self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.lastHit.name + 'ball.png').convert(), (self.width,self.height))
-        else:
-            self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/ball.png').convert(), (self.width,self.height))
-
-    def reset(self, posX, posY, velX, velY):
-        self.velX = velX
-        self.velY = velY
-        self.rect.center = (posX,posY)
-        self.lastHit = None
-class Paddle:
-    def __init__(self, posX, posY, width, height, speed, dashCooldownSeconds, keyUp, keyDown, keyDash, keyPull, name):
-        self.speed = abs(speed)
-        self.width = width
-        self.height = height
-        self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + name + '.png').convert(), (width,height))
-        self.rect = self.sprite.get_rect(center = (posX,posY))
-        self.keyUp = keyUp
-        self.keyDown = keyDown
-        self.keyDash = keyDash
-        self.keyPull = keyPull
-        self.dashCooldownSeconds = dashCooldownSeconds
-        self.timeSinceDash = dashCooldownSeconds
-        self.name = name
-        paddleList.append(self)
-
-    def getRect(self):
-        return self.rect
-
-    # update paddle position every frame
-    def updatePos(self):
-        self.timeSinceDash += 1/60
-        if keys[self.keyUp]:
-            self.rect.centery -= self.speed
-        if keys[self.keyDown]:
-            self.rect.centery += self.speed
-        # dash movement and cooldown implementation
-        if self.timeSinceDash >= self.dashCooldownSeconds:
-            if keys[self.keyDash]:
-                if keys[self.keyUp]:
-                    self.timeSinceDash = 0
-                    self.rect.centery -= self.speed * 25
-                elif keys[self.keyDown]:
-                    self.timeSinceDash = 0
-                    self.rect.centery += self.speed * 25
-        if self.rect.top < 0:
-            self.rect.top = 0
-        elif self.rect.bottom > resY:
-            self.rect.bottom = resY
-
-    def display(self):
-        screen.blit(self.sprite, self.rect)
-        # graphics for when paddle is on dash cooldown or pulling
-        if self.timeSinceDash < self.dashCooldownSeconds:
-            if keys[self.keyPull]:
-                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.name + 'cooldown.png').convert(), (self.width,self.height))
-            else:
-                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/paddlecooldown.png').convert(), (self.width,self.height))
-        else:
-            if keys[self.keyPull]:
-                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/' + self.name + '.png').convert(), (self.width,self.height))
-            else:
-                self.sprite = pygame.transform.scale(pygame.image.load('steven43_graphics/paddle.png').convert(), (self.width,self.height))
-
 import pygame
-import random
-from sys import exit
+import math
 
-pygame.init()
+from pygame.constants import K_a, K_d
+from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
-resX = 960
-resY = 540
+FONT = pygame.font.get_default_font()
 
-ballList = []
-paddleList = []
-scoreL = 0
-scoreR = 0
-font = pygame.font.Font(None, 50)
-screen = pygame.display.set_mode((resX,resY))
-pygame.display.set_caption('pong')
-clock = pygame.time.Clock()
-font = pygame.font.Font(None, 50)
-
-title = pygame.transform.scale(pygame.image.load('steven43_graphics/title.png').convert(), (resX,resY))
-background = pygame.transform.scale(pygame.image.load('steven43_graphics/background.png').convert(), (resX,resY))
-
-ball = dict()
-for i in range(0,1):
-    ball[i] = Ball(resX * .5, resY * .5, -4, 0, resX * .017, resX * .017, 'steven43_graphics/ball.png')
-
-
-paddleL = Paddle(resX * .02, resY * .5, resX * .017, resY * .186, 6, 3, pygame.K_w, pygame.K_s, pygame.K_d, pygame.K_a, 'paddleL')
-paddleR = Paddle(resX * .98, resY * .5, resX * .017, resY * .186, 6, 3, pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT, 'paddleR')
-
-start = False
-
-while True:
-    keys = pygame.key.get_pressed()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                start = True
-                scoreL = 0
-                scoreR = 0
-                for ball in ballList:
-                    ball.reset(resX * .5, resY * .5, -4, 0)
-            if event.key == pygame.K_ESCAPE:
-                start = False
-
-    textL = font.render(str(scoreL), True, 'White')
-    textRectL = textL.get_rect(center = (resX * .4, resY * .1))
-    textR = font.render(str(scoreR), True, 'White')
-    textRectR = textR.get_rect(center = (resX * .6, resY * .1))
-
-    if start == False:
-        screen.blit(title, (0,0))
-    else:
-        screen.blit(background, (0,0))
-        screen.blit(textL, textRectL)
-        screen.blit(textR, textRectR)
+class AbilityBall(Ball):
+    def __init__(self, color):
+        super().__init__(color)
+        self.lastHit = None
     
-    for ball in ballList:
-        ball.checkCollision()
-        if ball.rect.left < resX * .02:
-            scoreR += 1
-            ball.reset(resX * .5, resY * .5, -4, 0)
-        if ball.rect.right > resX * .98:
-            scoreL += 1
-            ball.reset(resX * .5, resY * .5, 4, 0)
-    
-    for paddle in paddleList:
-        paddle.updatePos()
+    def update(self, dt, state, pressed_keys):
+        self.rect.move_ip(self.x_vel * dt, self.y_vel * dt)
+        if self.rect.left < SCREEN_WIDTH * .02:
+            state.score(2)
+        elif self.rect.right > SCREEN_WIDTH * .98:
+            state.score(1)
+        if self.rect.top < 0 or self.rect.bottom > SCREEN_HEIGHT:
+            self.y_vel *= -1
+        self.surf.fill((255, 255, 255))
+        if self.lastHit != None and len(self.lastHit.controls) > 1:
+            if pressed_keys[self.lastHit.abilityControls[0]]:
+                self.surf.fill((225, 225, 0))
+                if self.lastHit.rect.centery > self.rect.centery:
+                    self.y_vel = (self.y_vel * dt + .04) / dt
+                if self.lastHit.rect.centery < self.rect.centery:
+                    self.y_vel = (self.y_vel * dt - .04) / dt
+        self.angle = math.atan2(self.y_vel, self.x_vel)
 
-    for ball in ballList:
-        ball.updatePos()
-        ball.display()
-    
-    for paddle in paddleList:
-        paddle.display()
+    def collide(self, paddles, dt):
+        for i in paddles:
+            if i.rect.colliderect(self.rect):
+                self.lastHit = i
+                self.surf.fill((225, 0, 255))
+        super().collide(paddles, dt)
 
-    pygame.display.update()
-    clock.tick(60)
+    def reset(self):
+        super().reset()
+        self.lastHit = None
+        self.y_vel = 0
+
+class AbilityPaddle(Paddle):
+    def __init__(self, x_pos, y_pos, controls, abilityControls, size=75, thresh=700):
+        super().__init__(x_pos, y_pos, controls, size=75, thresh=700)
+        self.abilityControls = abilityControls
+        self.dashCooldownSeconds = 2
+        self.timeSinceDash = self.dashCooldownSeconds
+        self.dashSeconds = 10/120
+        self.dashDirection = 1
+        self.color = (255, 255, 255)
+        #self.trailRect = self.rect
+        #self.trailSurf = pygame.Surface((10, size))
+        #self.lastPositions = []
+
+    def update(self, pressed_keys, bally, ballx, dt):
+        self.timeSinceDash += 1/120
+        if len(self.controls) == 0 and ballx > self.thresh and ballx < self.rect.x:
+            if self.rect.top > bally:
+                self.vel = -self.max_vel
+            elif self.rect.bottom < bally:
+                self.vel = self.max_vel
+            else:
+                self.vel = 0
+        elif len(self.controls) > 1:
+            if pressed_keys[self.abilityControls[1]] and self.timeSinceDash >= self.dashCooldownSeconds and (pressed_keys[self.controls[0]] or pressed_keys[self.controls[1]]):
+                if pressed_keys[self.controls[0]]:
+                    self.dashDirection = -1
+                    self.timeSinceDash = 0
+                elif pressed_keys[self.controls[1]]:
+                    self.dashDirection = 1
+                    self.timeSinceDash = 0
+            elif pressed_keys[self.controls[0]]:
+                self.vel -= self.max_vel
+            elif pressed_keys[self.controls[1]]:
+                self.vel += self.max_vel
+            else:
+                self.vel = 0
+
+            if self.timeSinceDash <= self.dashSeconds:
+                self.vel = 25000 / (self.dashSeconds * 120) * self.dashDirection
+            else:
+                if self.vel > self.max_vel:
+                    self.vel = self.max_vel
+                elif self.vel < -self.max_vel:
+                    self.vel = -self.max_vel
+            
+            if self.timeSinceDash >= self.dashCooldownSeconds or self.timeSinceDash <= self.dashSeconds:
+                if pressed_keys[self.abilityControls[0]]:
+                    self.color = (255, 255, 0)
+                else:
+                    self.color = (255, 255, 255)
+            else:
+                if pressed_keys[self.abilityControls[0]]:
+                    self.color = (128, 128, 0)
+                else:
+                    self.color = (128, 128, 128)
+            self.surf.fill(self.color)
+        
+        #self.lastPositions.append(self.rect.centery)
+        #if len(self.lastPositions) > 8:
+        #    self.lastPositions.pop(0)
+        #    self.trailRect = self.trailSurf.get_rect(center=(self.rect.centerx, self.lastPositions[0]))
+        #    self.trailSurf.fill((100, 100, 100))
+        
+        self.rect.move_ip(0, self.vel * dt)
+        
+        
+
+        if self.rect.bottom > SCREEN_HEIGHT:
+            self.rect.bottom = SCREEN_HEIGHT
+        elif self.rect.top < 0:
+            self.rect.top = 0
+
+    def reset(self):
+        super().reset()
+        self.timeSinceDash = self.dashCooldownSeconds
+
+def run(settings):
+    running = True
+    state = GameState()
+
+    ball = AbilityBall((255, 255, 255))
+    player = AbilityPaddle(SCREEN_WIDTH * .03, SCREEN_HEIGHT / 2, settings.p1_controls, (K_d, K_a))
+    player2 = AbilityPaddle(SCREEN_WIDTH * .97, SCREEN_HEIGHT / 2, (), ())
+    score = pygame.font.Font(FONT, 20)
+    score_text = score.render(
+        f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
+    )
+
+    clock = pygame.time.Clock()
+
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(ball)
+    all_sprites.add(player)
+    all_sprites.add(player2)
+
+    paddles = pygame.sprite.Group()
+    paddles.add(player)
+    paddles.add(player2)
+
+    dt = 0
+
+    while running:
+        settings.screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == SCORE:
+                score_text = score.render(
+                    f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
+                )
+                for entity in all_sprites:
+                    entity.reset()
+
+        if state.p2score > 5 or state.p1score > 5:
+            running = False
+
+        keys = pygame.key.get_pressed()
+        ball.update(dt, state, keys)
+        ball.collide(paddles, dt)
+
+        for paddle in paddles:
+            paddle.update(keys, ball.rect.centery, ball.rect.centerx, dt)
+
+        #settings.screen.blit(player.trailSurf, player.trailRect)
+        for entity in all_sprites:
+            settings.screen.blit(entity.surf, entity.rect)
+
+        settings.screen.blit(
+            score_text, ((int(SCREEN_WIDTH / 2), (SCREEN_HEIGHT * 9) / 10))
+        )
+
+        pygame.display.flip()
+        dt = clock.tick(120) / 1000.0
