@@ -13,9 +13,9 @@ class AbilityBall(Ball):
     
     def update(self, dt, state, pressed_keys):
         self.rect.move_ip(self.x_vel * dt, self.y_vel * dt)
-        if self.rect.left < SCREEN_WIDTH * .02:
+        if self.rect.left < 0:
             state.score(2)
-        elif self.rect.right > SCREEN_WIDTH * .98:
+        elif self.rect.right > SCREEN_WIDTH:
             state.score(1)
         if self.rect.top < 0 or self.rect.bottom > SCREEN_HEIGHT:
             self.y_vel *= -1
@@ -47,11 +47,13 @@ class AbilityPaddle(Paddle):
         self.abilityControls = abilityControls
         self.dashCooldownSeconds = 2
         self.timeSinceDash = self.dashCooldownSeconds
-        self.dashSeconds = 10/120
-        self.dashDirection = 1
+        self.upDashActive = False
+        self.downDashActive = False
         self.color = (255, 255, 255)
 
     def update(self, pressed_keys, bally, ballx, dt):
+        self.upDashActive = False
+        self.downDashActive = False
         self.timeSinceDash += 1/120
         if len(self.controls) == 0 and ballx > self.thresh and ballx < self.rect.x:
             if self.rect.top > bally:
@@ -63,11 +65,9 @@ class AbilityPaddle(Paddle):
         elif len(self.controls) > 1:
             if pressed_keys[self.abilityControls[1]] and self.timeSinceDash >= self.dashCooldownSeconds and (pressed_keys[self.controls[0]] or pressed_keys[self.controls[1]]):
                 if pressed_keys[self.controls[0]]:
-                    self.dashDirection = -1
-                    self.timeSinceDash = 0
+                    self.upDashActive = True
                 elif pressed_keys[self.controls[1]]:
-                    self.dashDirection = 1
-                    self.timeSinceDash = 0
+                    self.downDashActive = True
             elif pressed_keys[self.controls[0]]:
                 self.vel -= self.max_vel
             elif pressed_keys[self.controls[1]]:
@@ -75,15 +75,18 @@ class AbilityPaddle(Paddle):
             else:
                 self.vel = 0
 
-            if self.timeSinceDash <= self.dashSeconds:
-                self.vel = 25000 / (self.dashSeconds * 120) * self.dashDirection
+            if self.upDashActive or self.downDashActive:
+                self.timeSinceDash = 0
+                self.vel = 20000
+                if self.upDashActive:
+                    self.vel *= -1
             else:
                 if self.vel > self.max_vel:
                     self.vel = self.max_vel
                 elif self.vel < -self.max_vel:
                     self.vel = -self.max_vel
             
-            if self.timeSinceDash >= self.dashCooldownSeconds or self.timeSinceDash <= self.dashSeconds:
+            if self.timeSinceDash >= self.dashCooldownSeconds:
                 if pressed_keys[self.abilityControls[0]]:
                     self.color = (255, 255, 0)
                 else:
@@ -94,7 +97,7 @@ class AbilityPaddle(Paddle):
                 else:
                     self.color = (128, 128, 128)
             self.surf.fill(self.color)
-        
+
         self.rect.move_ip(0, self.vel * dt)
 
         if self.rect.bottom > SCREEN_HEIGHT:
@@ -153,7 +156,7 @@ def run(settings):
 
         for paddle in paddles:
             paddle.update(keys, ball.rect.centery, ball.rect.centerx, dt)
-            
+
         for entity in all_sprites:
             settings.screen.blit(entity.surf, entity.rect)
 

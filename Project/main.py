@@ -1,6 +1,6 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
-from menu import ControlsButton, Settings, MenuButton, ExtMenuButton, change_controls
+from menu import ControlsButton, Settings, MenuButton, SelectMenuButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
 import kkitson_multi_pong
