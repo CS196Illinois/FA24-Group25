@@ -13,6 +13,7 @@ import cmt8_musicpong
 import steven43_pong
 >>>>>>> 2effa20 (initial commit with common.py, added menu button)
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
+import plantsPong
 
 FONT = pygame.font.get_default_font()
 
@@ -29,6 +30,9 @@ foosball_button = MenuButton(
 )
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 487560c (praying rn)
 music_button = SelectMenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 =======
@@ -52,13 +56,27 @@ p1_controls = ControlsButton(
 p2_controls = ControlsButton(
     (SCREEN_WIDTH * 8) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 2
 )
+=======
+plants_button = MenuButton(60, 60, plantsPong.run, "PLANTS!")
+>>>>>>> 88c1df9 (praying rn)
 
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
+<<<<<<< HEAD
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 >>>>>>> 168ee18 (add changing controls button)
+=======
+<<<<<<< HEAD
+menu_group.add(music_button)
+menu_group.add(p1_controls)
+menu_group.add(p2_controls)
+
+=======
+menu_group.add(plants_button)
+>>>>>>> 88c1df9 (praying rn)
+>>>>>>> 487560c (praying rn)
 font = pygame.font.Font(FONT, 20)
 running = True
 
