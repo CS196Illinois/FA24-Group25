@@ -4,10 +4,10 @@
 import pygame
 import pygame.draw_py
 import pygame.freetype
-
+from pygame.constants import K_UP, K_DOWN, K_s, K_w
 from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
-pygame.init()
+#pygame.init()
 
 #colors
 BLUE = (0,0,255)
@@ -72,7 +72,7 @@ class Walnut(pygame.sprite.Sprite):
             self.image.fill(RED)
         if self.health == 0:
             self.kill()
-            #figure out how to make disappear
+
     
     def collide_ball(self, ball):
         if self.rect.colliderect(ball.rect):
@@ -104,24 +104,31 @@ class Flower(pygame.sprite.Sprite):
             self.blink -= 1
             #points increase for player
 
+class PlantsGameState(GameState):
+    def __init__(self):
+        super().__init__()
+        self.sunPointsPlayer1 = 15
+        self.sunPointsPlayer2 = 15
 
 def run(settings):
     running = True
+    state = GameState()
+    #plantState = PlantsGameState(state);
 
-    ball = Ball()
-    player1 = Paddle(SCREEN_WDITH / 10, SCREEN_HEIGHT / 2, (K_W, K_S), size=60)
+    ball = Ball((255,255,255))
+    player1 = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, (K_w, K_s), size=60)
     player2 = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, (K_UP, K_DOWN), size=60)
     score = pygame.font.Font(pygame.font.get_default_font(), 20)
     score_text = score.render(
-        f"{GameState.p1score} - {GameState.p2score}", False, GREEN
+        f"{state.p1score} - {state.p2score}", False, (255,255,255)
     )
 
     clock = pygame.time.Clock()
 
     moving_objects = pygame.sprite.Group()
-    moving_objects = add(ball)
-    moving_objects = add(player1)
-    moving_objects = add(player2)
+    moving_objects.add(ball)
+    moving_objects.add(player1)
+    moving_objects.add(player2)
 
     paddles = pygame.sprite.Group()
     paddles.add(player1)
@@ -142,16 +149,16 @@ def run(settings):
                 running = False
             if event.type == SCORE:
                 score_text = score.render(
-                    f"{GameState.p1score} - {GameState.p2score}", False, GREEN
+                    f"{state.p1score} - {state.p2score}", False, GREEN
                     #how do I add sun points to gamestate
                 )
                 for entity in moving_objects:
                     entity.reset()
         
-        if GameState.p2score > 3 or GameState.p1score > 3:
+        if state.p2score > 3 or state.p1score > 3:
             running = False
-            GameState.reset()
-        
+            state.reset()
+
         ball.update(dt)
         ball.collide(paddles, dt)
         keys = pygame.key.get_pressed()
