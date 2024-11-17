@@ -5,6 +5,10 @@ from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SC
 FONT = pygame.font.get_default_font()
 pygame.init()
 
+# make npc paddle react time faster 
+# make npc paddle slide 
+# possibly: change bg to look like ice rink?
+
 
 class Ball(Ball):
     def __init__(self, color):
@@ -12,7 +16,6 @@ class Ball(Ball):
         self.acceleration = -.005
 
     def collide(self, paddles, dt):
-        print(self.speed)
         self.speed = self.speed + (self.speed * self.acceleration) if self.speed > 500 else 500
         for i in paddles:
             if i.rect.colliderect(self.rect):
