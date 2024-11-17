@@ -9,6 +9,7 @@ import ssutt_acceleration
 import steven43_pong
 import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
+import plantsPong
 
 FONT = pygame.font.get_default_font()
 
@@ -45,6 +46,7 @@ p1_controls = ControlsButton(
 p2_controls = ControlsButton(
     (SCREEN_WIDTH * 8) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 2
 )
+plants_button = MenuButton(60, 60, plantsPong.run, "PLANTS!")
 
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
