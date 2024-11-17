@@ -5,6 +5,7 @@ from menu import Settings, MenuButton, ControlsButton, change_controls, SelectMe
 import mrodr292_pong
 import mrodr292_foosball
 import steven43_pong
+import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
