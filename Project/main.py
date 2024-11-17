@@ -3,6 +3,7 @@ from pygame.constants import K_UP, K_DOWN, K_s, K_w
 from menu import Settings, MenuButton
 import mrodr292_pong
 import mrodr292_foosball
+import steven43_pong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
@@ -17,9 +18,13 @@ pong_button = MenuButton(
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
+test_button = MenuButton(
+    SCREEN_WIDTH / 3, SCREEN_HEIGHT / 4, steven43_pong.run, "test!"
+)
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
+menu_group.add(test_button)
 font = pygame.font.Font(FONT, 20)
 running = True
 
