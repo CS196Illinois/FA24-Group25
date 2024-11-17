@@ -7,6 +7,7 @@ from pong_common import GameState, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 FONT = pygame.font.get_default_font()
 collision_sound = pygame.mixer.Sound("bonk-sound-effect-1.mp3")
 tempo_warning_ping = pygame.mixer.Sound("tempoWarnPing.mp3")
+chirp = pygame.mixer.Sound("chirp.mp3")
 
 # copied from Mariano's edition of the ball class but with edits to be useful for music pong
 class MusicBall(pygame.sprite.Sprite):
@@ -118,16 +119,24 @@ class MusicControl:
 
         pygame.time.set_timer(CHANGESUBDIVISION, timeToWait * 4, 1)
 
+    def random_event(self):
+        chirp.play()
+        print("Random event occurring")
+        pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
+
     
 PLAYPING = pygame.USEREVENT + 10
 CHANGEBPM = pygame.USEREVENT + 11
 CHANGESUBDIVISION = pygame.USEREVENT + 12
+RECURRINGRANDOMEVENT = pygame.USEREVENT + 13
 
 def run(settings, selected_song):
     running = True
     state = GameState()
 
     control = MusicControl(120, 2, selected_song)
+    pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(7, 15) * 1000, 1) # sets timer to random time from 7 to 15 seconds
+
     ball = control.ball
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
     player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, ())
@@ -173,6 +182,9 @@ def run(settings, selected_song):
                 control.ball.bpm = control.bpm
             if event.type == CHANGESUBDIVISION:
                 control.ball.subdivision = control.subdivision
+
+            if event.type == RECURRINGRANDOMEVENT:
+                control.random_event()
 
         if state.p2score > 5 or state.p1score > 5:
             running = False

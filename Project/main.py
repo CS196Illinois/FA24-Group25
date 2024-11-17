@@ -1,6 +1,6 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
-from menu import Settings, MenuButton, ExtMenuButton
+from menu import Settings, MenuButton, SelectMenuButton
 import mrodr292_pong
 import mrodr292_foosball
 import cmt8_musicpong
@@ -19,7 +19,7 @@ pong_button = MenuButton(
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
-music_button = ExtMenuButton(
+music_button = SelectMenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 )
 menu_group = pygame.sprite.Group()
