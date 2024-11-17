@@ -1,7 +1,6 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
-
-from menu import Settings, MenuButton, ControlsButton, change_controls
+from menu import ControlsButton, Settings, MenuButton, ExtMenuButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
 import kkitson_multi_pong
@@ -30,8 +29,6 @@ multi_button = MenuButton(
 split_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
 )
-#music_button = SelectMenuButton(
-    #(SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 ice_button = MenuButton(
     (SCREEN_WIDTH * 3) / 6, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )

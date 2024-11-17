@@ -6,6 +6,7 @@ from pong_common import GameState, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
 FONT = pygame.font.get_default_font()
 collision_sound = pygame.mixer.Sound("bonk-sound-effect-1.mp3")
+tempo_warning_ping = pygame.mixer.Sound("tempoWarnPing.mp3")
 
 # copied from Mariano's edition of the ball class but with edits to be useful for music pong
 class MusicBall(pygame.sprite.Sprite):
@@ -69,19 +70,15 @@ class MusicBall(pygame.sprite.Sprite):
                 distanceToNextPaddle = paddles.sprites().__getitem__(1).rect.left - self.rect.right
                 if (movingRightBeforeCollision):
                     distanceToNextPaddle = paddles.sprites().__getitem__(0).rect.right - self.rect.left
-                print("distance to next paddle: " + str(distanceToNextPaddle))
+                #print("distance to next paddle: " + str(distanceToNextPaddle))
 
 
                 # formula for how many pixels the ball has to move per millisecond in order to line up the next hit on the required musical subdivision
                 self.x_vel = distanceToNextPaddle * self.bpm * self.subdivision / 240
-                print(str(self.x_vel))
                 
-
-                #phi = 0.3 * math.pi * (2 * offset - 1)
                 
                 phi = 0.4 * math.pi * (2 * offset - 1)
                 self.y_vel = self.speed * math.sin(phi * 1.2)
-                print(str(self.y_vel))
                 self.angle = math.atan2(self.y_vel, self.x_vel)
                 collision_sound.play()
 
@@ -94,19 +91,44 @@ class MusicBall(pygame.sprite.Sprite):
         self.angle = math.pi + random.randint(0, 1) * math.pi
         self.rect.centerx = int(SCREEN_WIDTH / 2)
         self.rect.centery = int(SCREEN_HEIGHT / 2)
+        
 
+class MusicControl:
+    def __init__(self, bpm, subdivision, selected_song):
+        self.bpm = bpm
+        self.subdivision = subdivision
+        self.selected_song = selected_song
+        self.ball = MusicBall(self.bpm, self.subdivision)
 
-def run(settings):
+    def queue_bpm_change(self, new):
+        self.bpm = new
+        timeToWait = 1000 #need to calculate based on bpm and subdivision. In milliseconds
+        #introduce beeps before changing the active bpm
+        tempo_warning_ping.play()
+        pygame.time.set_timer(PLAYPING, timeToWait, 4)
+
+        pygame.time.set_timer(CHANGEBPM, timeToWait * 4, 1)
+
+    def queue_subdivision_change(self, new):
+        self.subdivision = new
+        timeToWait = 1000 #need to calculate based on bpm and subdivision. In milliseconds
+        #introduce beeps before changing the active subdivision
+        tempo_warning_ping.play()
+        pygame.time.set_timer(PLAYPING, timeToWait, 4)
+
+        pygame.time.set_timer(CHANGESUBDIVISION, timeToWait * 4, 1)
+
+    
+PLAYPING = pygame.USEREVENT + 10
+CHANGEBPM = pygame.USEREVENT + 11
+CHANGESUBDIVISION = pygame.USEREVENT + 12
+
+def run(settings, selected_song):
     running = True
     state = GameState()
-    
 
-    # Specific to music pong
-    beatsPerMinute = 60
-    subdivision = 2 # 1: whole note subdivision, 2: half note subdivision, 4: quarter note subdivision and so on
-
-
-    ball = MusicBall(beatsPerMinute, subdivision)
+    control = MusicControl(120, 2, selected_song)
+    ball = control.ball
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
     player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, ())
     score = pygame.font.Font(FONT, 20)
@@ -139,6 +161,18 @@ def run(settings):
                 )
                 for entity in all_sprites:
                     entity.reset()
+                control.bpm = 120
+                control.subdivision = 2
+                ball.bpm = control.bpm
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                control.queue_subdivision_change(3)
+            if event.type == PLAYPING:
+                tempo_warning_ping.play()
+            if event.type == CHANGEBPM:
+                control.ball.bpm = control.bpm
+            if event.type == CHANGESUBDIVISION:
+                control.ball.subdivision = control.subdivision
 
         if state.p2score > 5 or state.p1score > 5:
             running = False
