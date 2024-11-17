@@ -27,3 +27,23 @@ class MenuButton(pygame.sprite.Sprite):
         ):
             self.action(settings)
             settings.screen.fill((0, 0, 0))
+
+class ExtMenuButton(pygame.sprite.Sprite):
+    def __init__(self, x, y, action, text, input_param):
+        super().__init__()
+        self.surf = Surface((150, 150))
+        self.surf.fill((128, 128, 64))
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.action = action
+        self.text = text
+        self.input_param = input_param # in the case of music pong, this extra parameter is an int referring to the song to play
+
+    def check_click(self, x, y, settings):
+        if (
+            x <= self.rect.right
+            and x >= self.rect.left
+            and y <= self.rect.bottom
+            and y >= self.rect.top
+        ):
+            self.action(settings, self.input_param)
+            settings.screen.fill((0, 0, 0))
