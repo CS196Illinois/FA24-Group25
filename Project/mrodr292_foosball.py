@@ -11,7 +11,7 @@ def run(settings):
     running = True
     state = GameState()
 
-    ball = Ball((255, 255, 255))
+    ball = Ball((255, 255, 255), "Project/media/soccerball.png")
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls, size=60)
     player2 = Paddle(
         (SCREEN_WIDTH * 4) / 10, SCREEN_HEIGHT / 2, settings.p2_controls, size=60

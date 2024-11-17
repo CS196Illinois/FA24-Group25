@@ -64,9 +64,9 @@ class ControlsButton(MenuButton):
 
     def next_controls(self):
         if self.state == "W/S":
-            self.state = "Arrow Keys"
+            self.state = "Arrows"
             return (pygame.K_UP, pygame.K_DOWN)
-        elif self.state == "Arrow Keys":
+        elif self.state == "Arrows":
             self.state = "None"
             return ()
         elif self.state == "None":
