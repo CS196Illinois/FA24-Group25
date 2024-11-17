@@ -26,13 +26,17 @@ class GameState:
 # all behavior that the ball should be defined in here. can be extended if need be
 class Ball(pygame.sprite.Sprite):
     # Todo: update ball constructor to take size (and consider other useful additions)
-    def __init__(self, color):
+    def __init__(self, color, image):
         super(Ball, self).__init__()
 
-        self.surf = pygame.Surface((15, 15))
+        if image is None:
+            self.surf = pygame.Surface((15, 15))
+            self.color = color
+            self.surf.fill((color))
+        else:
+            print("image")
+            self.surf = pygame.image.load(image)
 
-        self.color = color
-        self.surf.fill((color))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
         self.speed = 500.0

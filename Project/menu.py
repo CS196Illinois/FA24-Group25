@@ -28,7 +28,20 @@ class MenuButton(pygame.sprite.Sprite):
             self.action(settings)
             settings.screen.fill((0, 0, 0))
 
-
+class SelectMenuButton(MenuButton):
+    def __init__(self, x, y, action, text, input_param):
+        super().__init__(x, y, action, text)
+        self.input_param = input_param # in the case of music pong, this extra parameter is an int referring to the song to play
+    def check_click(self, x, y, settings):
+        if (
+            x <= self.rect.right
+            and x >= self.rect.left
+            and y <= self.rect.bottom
+            and y >= self.rect.top
+        ):
+            self.action(settings, self.input_param)
+            settings.screen.fill((0, 0, 0))
+            
 class ControlsButton(MenuButton):
     def __init__(self, x, y, action, player):
         super().__init__(x, y, action, "")
@@ -53,9 +66,9 @@ class ControlsButton(MenuButton):
 
     def next_controls(self):
         if self.state == "W/S":
-            self.state = "Arrow Keys"
+            self.state = "Arrows"
             return (pygame.K_UP, pygame.K_DOWN)
-        elif self.state == "Arrow Keys":
+        elif self.state == "Arrows":
             self.state = "None"
             return ()
         elif self.state == "None":

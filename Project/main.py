@@ -1,14 +1,18 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
-from menu import Settings, MenuButton, ControlsButton, change_controls
+
+from menu import Settings, MenuButton, ControlsButton, change_controls, SelectMenuButton
 import mrodr292_pong
 import mrodr292_foosball
 import ssutt_acceleration
+import steven43_pong
+import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
 
 pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
@@ -21,6 +25,9 @@ foosball_button = MenuButton(
 ice_button = MenuButton(
     (SCREEN_WIDTH * 3) / 4, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
+music_button = SelectMenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+)
 
 p1_controls = ControlsButton(
     (SCREEN_WIDTH * 2) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 1
@@ -32,9 +39,9 @@ p2_controls = ControlsButton(
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
-menu_group.add(ice_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
+
 font = pygame.font.Font(FONT, 20)
 running = True
 
