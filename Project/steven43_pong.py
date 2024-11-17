@@ -50,6 +50,9 @@ class AbilityPaddle(Paddle):
         self.dashSeconds = 10/120
         self.dashDirection = 1
         self.color = (255, 255, 255)
+        #self.trailRect = self.rect
+        #self.trailSurf = pygame.Surface((10, size))
+        #self.lastPositions = []
 
     def update(self, pressed_keys, bally, ballx, dt):
         self.timeSinceDash += 1/120
@@ -76,7 +79,7 @@ class AbilityPaddle(Paddle):
                 self.vel = 0
 
             if self.timeSinceDash <= self.dashSeconds:
-                self.vel = 20000 / (self.dashSeconds * 120) * self.dashDirection
+                self.vel = 25000 / (self.dashSeconds * 120) * self.dashDirection
             else:
                 if self.vel > self.max_vel:
                     self.vel = self.max_vel
@@ -94,8 +97,16 @@ class AbilityPaddle(Paddle):
                 else:
                     self.color = (128, 128, 128)
             self.surf.fill(self.color)
-
+        
+        #self.lastPositions.append(self.rect.centery)
+        #if len(self.lastPositions) > 8:
+        #    self.lastPositions.pop(0)
+        #    self.trailRect = self.trailSurf.get_rect(center=(self.rect.centerx, self.lastPositions[0]))
+        #    self.trailSurf.fill((100, 100, 100))
+        
         self.rect.move_ip(0, self.vel * dt)
+        
+        
 
         if self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
@@ -154,6 +165,7 @@ def run(settings):
         for paddle in paddles:
             paddle.update(keys, ball.rect.centery, ball.rect.centerx, dt)
 
+        #settings.screen.blit(player.trailSurf, player.trailRect)
         for entity in all_sprites:
             settings.screen.blit(entity.surf, entity.rect)
 
