@@ -3,6 +3,7 @@ from pygame.constants import K_UP, K_DOWN, K_s, K_w
 from menu import Settings, MenuButton, ControlsButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
+import steven43_pong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
