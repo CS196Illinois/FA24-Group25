@@ -38,6 +38,7 @@ class AbilityBall(Ball):
 
     def reset(self):
         super().reset()
+        self.y_vel *= .5
         self.lastHit = None
 
 class AbilityPaddle(Paddle):
@@ -49,9 +50,6 @@ class AbilityPaddle(Paddle):
         self.dashSeconds = 10/120
         self.dashDirection = 1
         self.color = (255, 255, 255)
-        self.trailRects = [self.rect] * 3
-        self.trailSurfs = [pygame.Surface((10, size))] * 3
-        self.lastPositions = []
 
     def update(self, pressed_keys, bally, ballx, dt):
         self.timeSinceDash += 1/120
@@ -97,21 +95,7 @@ class AbilityPaddle(Paddle):
                     self.color = (128, 128, 128)
             self.surf.fill(self.color)
         
-        self.lastPositions.append(self.rect.centery)
-        if len(self.lastPositions) > 5:
-            self.trailRects[0] = self.trailSurfs[0].get_rect(center=(self.rect.centerx, self.lastPositions[len(self.lastPositions) - 5]))
-            self.trailSurfs[0].fill((255, 0, 0))
-        if len(self.lastPositions) > 10:
-            self.trailRects[1] = self.trailSurfs[1].get_rect(center=(self.rect.centerx, self.lastPositions[len(self.lastPositions) - 10]))
-            self.trailSurfs[1].fill((0, 255, 0))
-        if len(self.lastPositions) > 15:
-            self.lastPositions.pop(0)
-            self.trailRects[2] = self.trailSurfs[2].get_rect(center=(self.rect.centerx, self.lastPositions[0]))
-            self.trailSurfs[2].fill((0, 0, 255))
-        
         self.rect.move_ip(0, self.vel * dt)
-        
-        
 
         if self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
@@ -169,8 +153,6 @@ def run(settings):
 
         for paddle in paddles:
             paddle.update(keys, ball.rect.centery, ball.rect.centerx, dt)
-            for i in range(2, -1, -1):
-                settings.screen.blit(paddle.trailSurfs[i], paddle.trailRects[i])
             
         for entity in all_sprites:
             settings.screen.blit(entity.surf, entity.rect)
