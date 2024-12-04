@@ -20,13 +20,16 @@ pong_button = MenuButton(
     SCREEN_WIDTH / 5, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
 )
 foosball_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 5, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
 ice_button = MenuButton(
     (SCREEN_WIDTH * 3) / 5, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
 music_button = MenuButton(
     (SCREEN_WIDTH * 4) / 5, (SCREEN_HEIGHT * 3) / 4, cmt8_musicpong.run, "MUSIC!"
+)
+ability_button = MenuButton(
+    (SCREEN_WIDTH * 2.6) / 3, (SCREEN_HEIGHT * 3) / 4, steven43_pong.run, "ABILITY PONG"
 )
 
 p1_controls = ControlsButton(
@@ -41,6 +44,7 @@ menu_group.add(pong_button)
 menu_group.add(foosball_button)
 menu_group.add(ice_button)
 menu_group.add(music_button)
+menu_group.add(ability_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 
