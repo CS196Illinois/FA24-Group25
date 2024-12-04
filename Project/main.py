@@ -1,19 +1,13 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
-<<<<<<< HEAD
-from menu import Settings, MenuButton, SelectMenuButton
-=======
-from menu import Settings, MenuButton, ControlsButton, change_controls
->>>>>>> 168ee18 (add changing controls button)
+
+from menu import Settings, MenuButton, ControlsButton, change_controls, SelectMenuButton
 import mrodr292_pong
 import mrodr292_foosball
-<<<<<<< HEAD
-import cmt8_musicpong
-=======
 import steven43_pong
->>>>>>> 2effa20 (initial commit with common.py, added menu button)
-from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
+import cmt8_musicpong
 import plantsPong
+from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
 
@@ -28,27 +22,13 @@ pong_button = MenuButton(
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 487560c (praying rn)
 music_button = SelectMenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
-=======
-test_button = MenuButton(
-    SCREEN_WIDTH / 3, SCREEN_HEIGHT / 4, steven43_pong.run, "test!"
->>>>>>> 2effa20 (initial commit with common.py, added menu button)
 )
-menu_group = pygame.sprite.Group()
-menu_group.add(pong_button)
-menu_group.add(foosball_button)
-<<<<<<< HEAD
-menu_group.add(music_button)
-=======
-menu_group.add(test_button)
->>>>>>> 2effa20 (initial commit with common.py, added menu button)
-=======
+
+plants_button = MenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, plantsPong.run, "PLANTS"
+)
 
 p1_controls = ControlsButton(
     (SCREEN_WIDTH * 2) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 1
@@ -56,27 +36,15 @@ p1_controls = ControlsButton(
 p2_controls = ControlsButton(
     (SCREEN_WIDTH * 8) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 2
 )
-=======
-plants_button = MenuButton(60, 60, plantsPong.run, "PLANTS!")
->>>>>>> 88c1df9 (praying rn)
 
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
-<<<<<<< HEAD
-menu_group.add(p1_controls)
-menu_group.add(p2_controls)
->>>>>>> 168ee18 (add changing controls button)
-=======
-<<<<<<< HEAD
 menu_group.add(music_button)
+menu_group.add(plants_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 
-=======
-menu_group.add(plants_button)
->>>>>>> 88c1df9 (praying rn)
->>>>>>> 487560c (praying rn)
 font = pygame.font.Font(FONT, 20)
 running = True
 

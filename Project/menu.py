@@ -28,13 +28,20 @@ class MenuButton(pygame.sprite.Sprite):
             self.action(settings)
             settings.screen.fill((0, 0, 0))
 
-<<<<<<< HEAD
 class SelectMenuButton(MenuButton):
     def __init__(self, x, y, action, text, input_param):
         super().__init__(x, y, action, text)
         self.input_param = input_param # in the case of music pong, this extra parameter is an int referring to the song to play
-=======
-
+    def check_click(self, x, y, settings):
+        if (
+            x <= self.rect.right
+            and x >= self.rect.left
+            and y <= self.rect.bottom
+            and y >= self.rect.top
+        ):
+            self.action(settings, self.input_param)
+            settings.screen.fill((0, 0, 0))
+            
 class ControlsButton(MenuButton):
     def __init__(self, x, y, action, player):
         super().__init__(x, y, action, "")
@@ -47,7 +54,6 @@ class ControlsButton(MenuButton):
 
         self.text = f"Player {self.player}: {self.state}"
 
->>>>>>> 168ee18 (add changing controls button)
     def check_click(self, x, y, settings):
         if (
             x <= self.rect.right
@@ -55,10 +61,6 @@ class ControlsButton(MenuButton):
             and y <= self.rect.bottom
             and y >= self.rect.top
         ):
-<<<<<<< HEAD
-            self.action(settings, self.input_param)
-            settings.screen.fill((0, 0, 0))
-=======
             self.action(settings, self.next_controls(), self.player)
             self.text = f"Player {self.player}: {self.state}"
 
@@ -94,4 +96,3 @@ def change_controls(settings: Settings, new, player):
 #             settings.p2_controls = (pygame.K_UP, pygame.K_DOWN)
 #         else:
 #             settings.p2_controls =
->>>>>>> 168ee18 (add changing controls button)
