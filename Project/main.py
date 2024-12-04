@@ -1,7 +1,7 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
 
-from menu import Settings, MenuButton, ControlsButton, change_controls, SelectMenuButton
+from menu import Settings, MenuButton, ControlsButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
 import ssutt_acceleration
@@ -17,16 +17,16 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
 pong_button = MenuButton(
-    SCREEN_WIDTH / 4, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
+    SCREEN_WIDTH / 5, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
 )
 foosball_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 4, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
+    (SCREEN_WIDTH * 2) / 5, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
 ice_button = MenuButton(
-    (SCREEN_WIDTH * 3) / 4, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
+    (SCREEN_WIDTH * 3) / 5, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
-music_button = SelectMenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+music_button = MenuButton(
+    (SCREEN_WIDTH * 4) / 5, (SCREEN_HEIGHT * 3) / 4, cmt8_musicpong.run, "MUSIC!"
 )
 
 p1_controls = ControlsButton(
@@ -39,6 +39,8 @@ p2_controls = ControlsButton(
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
+menu_group.add(ice_button)
+menu_group.add(music_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 

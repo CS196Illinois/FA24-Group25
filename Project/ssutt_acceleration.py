@@ -11,8 +11,8 @@ pygame.init()
 
 
 class Ball(Ball):
-    def __init__(self, color):
-        super().__init__(color)
+    def __init__(self, color, image):
+        super().__init__(color, image)
         self.acceleration = -.005
 
     def collide(self, paddles, dt):
@@ -68,7 +68,7 @@ def run(settings):
     running = True
     state = GameState()
 
-    ball = Ball((255, 255, 255))
+    ball = Ball((255, 255, 255), None)
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
     player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
     score = pygame.font.Font(FONT, 20)
