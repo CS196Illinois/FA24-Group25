@@ -10,6 +10,7 @@ import steven43_pong
 import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 import plantsPong
+from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
 
@@ -31,13 +32,14 @@ split_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
 )
 ice_button = MenuButton(
-    (SCREEN_WIDTH * 3) / 6, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
+    (SCREEN_WIDTH * 3) / 5, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
-music_button = MenuButton(
-    (SCREEN_WIDTH * 4) / 6, (SCREEN_HEIGHT * 3) / 4, cmt8_musicpong.run, "MUSIC!"
+music_button = SelectMenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 )
-ability_button = MenuButton(
-    (SCREEN_WIDTH * 5) / 6, (SCREEN_HEIGHT * 3) / 4, steven43_pong.run, "ABILITIES!"
+
+plants_button = MenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, plantsPong.run, "PLANTS"
 )
 
 p1_controls = ControlsButton(
@@ -55,7 +57,7 @@ menu_group.add(multi_button)
 menu_group.add(split_button)
 menu_group.add(ice_button)
 menu_group.add(music_button)
-menu_group.add(ability_button)
+menu_group.add(plants_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 
