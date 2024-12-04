@@ -27,8 +27,7 @@ class MenuButton(pygame.sprite.Sprite):
         ):
             self.action(settings)
             settings.screen.fill((0, 0, 0))
-
-
+            
 class ControlsButton(MenuButton):
     def __init__(self, x, y, action, player):
         super().__init__(x, y, action, "")
