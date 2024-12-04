@@ -5,9 +5,9 @@ import random
 from pong_common import GameState, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
 FONT = pygame.font.get_default_font()
-collision_sound = pygame.mixer.Sound("bonk-sound-effect-1.mp3")
-tempo_warning_ping = pygame.mixer.Sound("tempoWarnPing.mp3")
-chirp = pygame.mixer.Sound("chirp.mp3")
+collision_sound = pygame.mixer.Sound("Project/media/bonk-sound-effect-1.wav")
+tempo_warning_ping = pygame.mixer.Sound("Project/media/tempoWarnPing.mp3")
+chirp = pygame.mixer.Sound("Project/media/chirp.mp3")
 
 # copied from Mariano's edition of the ball class but with edits to be useful for music pong
 class MusicBall(pygame.sprite.Sprite):
@@ -29,7 +29,7 @@ class MusicBall(pygame.sprite.Sprite):
 
         self.angle = math.pi + random.randint(0, 1) * math.pi
 
-        self.x_vel = self.speed * math.cos(self.angle) 
+        self.x_vel = 387 * self.bpm * self.subdivision / 240
         self.y_vel = self.speed * math.sin(self.angle)
 
         self.locked = False
@@ -54,42 +54,47 @@ class MusicBall(pygame.sprite.Sprite):
         # self.x_vel = math.cos(self.angle) * self.speed
         self.y_vel = math.sin(self.angle) * self.speed
 
-    def collide(self, paddles, dt):
-        for i in paddles:
-            if i.rect.colliderect(self.rect):
-                # ratio of difference in height between paddle center and ball center difference and sum
-                offset = (self.rect.y + self.rect.height - i.rect.y) / (
-                    i.rect.height + self.rect.height
-                )
+    def collide(self, paddle, dt, other_paddle):
 
-                movingRightBeforeCollision = self.x_vel > 0  # calculate distance to the next paddle that the ball must hit
-                
-                self.x_vel *= -1 #free the ball from recolliding
-                self.rect.move_ip(self.x_vel * dt, -self.y_vel * dt)
+        if (self.rect.top < paddle.rect.bottom and self.rect.bottom > paddle.rect.top):
+            print("collision detected")
+            # ratio of difference in height between paddle center and ball center difference and sum
+            offset = (self.rect.y + self.rect.height - paddle.rect.y) / (
+                paddle.rect.height + self.rect.height
+            )
 
-                
-                distanceToNextPaddle = paddles.sprites().__getitem__(1).rect.left - self.rect.right
-                if (movingRightBeforeCollision):
-                    distanceToNextPaddle = paddles.sprites().__getitem__(0).rect.right - self.rect.left
-                #print("distance to next paddle: " + str(distanceToNextPaddle))
+            movingRightBeforeCollision = self.x_vel > 0  # calculate distance to the next paddle that the ball must hit
+            
+            self.x_vel *= -1 #free the ball from recolliding
+
+            distanceToNextPaddle = 0
+            if (movingRightBeforeCollision == False):
+                self.rect.left = paddle.rect.right #testing this
+                distanceToNextPaddle = other_paddle.rect.right - self.rect.right
+            if (movingRightBeforeCollision):
+                self.rect.right = paddle.rect.left #testing this
+                distanceToNextPaddle = other_paddle.rect.left - self.rect.left
 
 
-                # formula for how many pixels the ball has to move per millisecond in order to line up the next hit on the required musical subdivision
-                self.x_vel = distanceToNextPaddle * self.bpm * self.subdivision / 240
+
+            # formula for how many pixels the ball has to move per millisecond in order to line up the next hit on the required musical subdivision
+            self.x_vel = distanceToNextPaddle * self.bpm * self.subdivision / 240
                 
                 
-                phi = 0.4 * math.pi * (2 * offset - 1)
-                self.y_vel = self.speed * math.sin(phi * 1.2)
-                self.angle = math.atan2(self.y_vel, self.x_vel)
-                collision_sound.play()
+            phi = 0.4 * math.pi * (2 * offset - 1)
+                
+                
+            self.y_vel = self.speed * math.sin(phi * 1.2)
+            self.angle = math.atan2(self.y_vel, self.x_vel)
+            self.rect.move_ip(self.x_vel * dt, self.y_vel * dt) #testing
+            collision_sound.play()
 
     # figured this might be useful boilerplate
     def set_speed(self, speed: int):
         pass
 
     def reset(self):
-        self.speed = 500
-        self.angle = math.pi + random.randint(0, 1) * math.pi
+        self.x_vel = 387 * self.bpm * self.subdivision / 240
         self.rect.centerx = int(SCREEN_WIDTH / 2)
         self.rect.centery = int(SCREEN_HEIGHT / 2)
         
@@ -124,18 +129,27 @@ class MusicControl:
         print("Random event occurring")
         pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
 
-    
+
 PLAYPING = pygame.USEREVENT + 10
 CHANGEBPM = pygame.USEREVENT + 11
 CHANGESUBDIVISION = pygame.USEREVENT + 12
 RECURRINGRANDOMEVENT = pygame.USEREVENT + 13
 
+BEAT = pygame.USEREVENT + 14
+SUPPOSEDHIT = pygame.USEREVENT + 15
+
 def run(settings, selected_song):
     running = True
     state = GameState()
 
+    pygame.mixer.music.load("Project/media/machine120cut.wav") #TODO need to load specific song from selected_song parameter
+    pygame.mixer.music.play(loops=-1)
+
     control = MusicControl(120, 2, selected_song)
-    pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(7, 15) * 1000, 1) # sets timer to random time from 7 to 15 seconds
+    pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
+    pygame.time.set_timer(BEAT, int((60 / control.bpm) * 1000))
+    pygame.time.set_timer(SUPPOSEDHIT, int((60 / control.bpm) * 1000 * 4 / control.subdivision))
+    
 
     ball = control.ball
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
@@ -157,14 +171,18 @@ def run(settings, selected_song):
     paddles.add(player2)
 
     dt = 0
+    beats = 1
+    nextPaddle = "right"
 
     while running:
         settings.screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.mixer_music.stop()
                 running = False
 
             if event.type == SCORE:
+                nextPaddle = "right"
                 score_text = score.render(
                     f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
                 )
@@ -173,6 +191,22 @@ def run(settings, selected_song):
                 control.bpm = 120
                 control.subdivision = 2
                 ball.bpm = control.bpm
+                
+
+            if event.type == BEAT:
+                beats = beats + 1
+            
+            if event.type == SUPPOSEDHIT:
+                print("Supposed hit")
+                if (nextPaddle == "right"):
+                    #change ball collide method to only take one paddle and check for y position overlap with that paddle
+                    ball.collide(paddles.sprites().__getitem__(1), dt, paddles.sprites().__getitem__(0))
+                    nextPaddle = "left"
+                else:
+                    ball.collide(paddles.sprites().__getitem__(0), dt, paddles.sprites().__getitem__(1))
+                    nextPaddle = "right"
+
+
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 control.queue_subdivision_change(3)
@@ -187,10 +221,11 @@ def run(settings, selected_song):
                 control.random_event()
 
         if state.p2score > 5 or state.p1score > 5:
+            pygame.mixer_music.stop()
             running = False
 
         ball.update(dt, state)
-        ball.collide(paddles, dt)
+        #ball.collide(paddles, dt)
         keys = pygame.key.get_pressed()
 
         for paddle in paddles:
