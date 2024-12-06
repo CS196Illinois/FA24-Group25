@@ -5,7 +5,6 @@ from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SC
 FONT = pygame.font.get_default_font()
 pygame.init()
 
-# make npc paddle react time faster 
 # make npc paddle slide 
 # possibly: change bg to look like ice rink?
 
@@ -31,8 +30,9 @@ class Ball(Ball):
 
 
 class Paddle(Paddle):
-    def __init__(self, x_pos, y_pos, controls, size=75, thresh=700):
+    def __init__(self, color, x_pos, y_pos, controls, size=75, thresh=700):
         super().__init__(x_pos, y_pos, controls, size=75, thresh=700)
+        self.surf.fill(color)
         self.acceleration = .01
 
     def update(self, pressed_keys, bally, ballx, dt):
@@ -68,13 +68,15 @@ def run(settings):
     running = True
     state = GameState()
 
-    ball = Ball((255, 255, 255), None)
-    player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
-    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
+    ball = Ball((0, 0, 0), None)
+    player = Paddle((0,0,0), SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
+    player2 = Paddle((0,0,0), (SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
-        f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
+        f"{state.p1score} - {state.p2score}", False, (0, 0, 0)
     )
+    image = pygame.image.load("Project/media/ice.png").convert()
+    image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     clock = pygame.time.Clock()
 
@@ -90,14 +92,15 @@ def run(settings):
     dt = 0
 
     while running:
-        settings.screen.fill((0, 0, 0))
+        settings.screen.blit(image, (0, 0))
+        #settings.screen.fill((227, 254, 255))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == SCORE:
                 score_text = score.render(
-                    f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
+                    f"{state.p1score} - {state.p2score}", False, (0, 0, 0)
                 )
                 for entity in all_sprites:
                     entity.reset()
@@ -116,7 +119,7 @@ def run(settings):
             settings.screen.blit(entity.surf, entity.rect)
 
         settings.screen.blit(
-            score_text, ((int(SCREEN_WIDTH / 2), (SCREEN_HEIGHT * 9) / 10))
+            score_text, ((int(SCREEN_WIDTH / 2.08), (SCREEN_HEIGHT * 9) / 10))
         )
 
         pygame.display.flip()
