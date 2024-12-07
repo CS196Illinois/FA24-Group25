@@ -30,12 +30,13 @@ class MusicBall(pygame.sprite.Sprite):
         self.angle = math.pi + random.randint(0, 1) * math.pi
 
         self.x_vel = 387 * self.bpm * self.subdivision / 240
-        self.y_vel = self.speed * math.sin(self.angle)
+        self.y_vel = 0
 
         self.locked = False
 
     # dt is time since last frame
     def update(self, dt, state):
+        print("dt: " + str(dt) + ". moving ball: " + str(self.x_vel * dt))
         self.rect.move_ip(self.x_vel * dt, self.y_vel * dt)
         if self.rect.left < 0:
             state.score(2)
@@ -57,7 +58,6 @@ class MusicBall(pygame.sprite.Sprite):
     def collide(self, paddle, dt, other_paddle):
 
         if (self.rect.top < paddle.rect.bottom and self.rect.bottom > paddle.rect.top):
-            print("collision detected")
             # ratio of difference in height between paddle center and ball center difference and sum
             offset = (self.rect.y + self.rect.height - paddle.rect.y) / (
                 paddle.rect.height + self.rect.height
@@ -81,7 +81,7 @@ class MusicBall(pygame.sprite.Sprite):
             self.x_vel = distanceToNextPaddle * self.bpm * self.subdivision / 240
                 
                 
-            phi = 0.4 * math.pi * (2 * offset - 1)
+            phi = 0.3 * math.pi * (2 * offset - 1)
                 
                 
             self.y_vel = self.speed * math.sin(phi * 1.2)
@@ -95,6 +95,7 @@ class MusicBall(pygame.sprite.Sprite):
 
     def reset(self):
         self.x_vel = 387 * self.bpm * self.subdivision / 240
+        self.y_vel = 0
         self.rect.centerx = int(SCREEN_WIDTH / 2)
         self.rect.centery = int(SCREEN_HEIGHT / 2)
         
@@ -105,29 +106,23 @@ class MusicControl:
         self.subdivision = subdivision
         self.selected_song = selected_song
         self.ball = MusicBall(self.bpm, self.subdivision)
-
-    def queue_bpm_change(self, new):
-        self.bpm = new
-        timeToWait = 1000 #need to calculate based on bpm and subdivision. In milliseconds
-        #introduce beeps before changing the active bpm
-        tempo_warning_ping.play()
-        pygame.time.set_timer(PLAYPING, timeToWait, 4)
-
-        pygame.time.set_timer(CHANGEBPM, timeToWait * 4, 1)
+        pygame.time.set_timer(SUPPOSEDHIT, int((60 / self.bpm) * 1000 * 4 / self.subdivision))
 
     def queue_subdivision_change(self, new):
         self.subdivision = new
-        timeToWait = 1000 #need to calculate based on bpm and subdivision. In milliseconds
-        #introduce beeps before changing the active subdivision
-        tempo_warning_ping.play()
-        pygame.time.set_timer(PLAYPING, timeToWait, 4)
-
-        pygame.time.set_timer(CHANGESUBDIVISION, timeToWait * 4, 1)
+        #tempo_warning_ping.play()
+        #pygame.time.set_timer(PLAYPING, timeToWait, 4)
+        event = pygame.event.Event(CHANGESUBDIVISION)
+        pygame.event.post(event)
 
     def random_event(self):
-        chirp.play()
+        #chirp.play()
         print("Random event occurring")
         pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
+
+    def reset(self):
+        self.subdivision = 2
+        
 
 
 PLAYPING = pygame.USEREVENT + 10
@@ -137,6 +132,7 @@ RECURRINGRANDOMEVENT = pygame.USEREVENT + 13
 
 BEAT = pygame.USEREVENT + 14
 SUPPOSEDHIT = pygame.USEREVENT + 15
+BEATRESET = pygame.USEREVENT + 16
 
 def run(settings, selected_song):
     running = True
@@ -146,9 +142,8 @@ def run(settings, selected_song):
     pygame.mixer.music.play(loops=-1)
 
     control = MusicControl(120, 2, selected_song)
-    pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
+    pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 15) * 1000, 1) # sets timer to random time from 10 to 18 seconds
     pygame.time.set_timer(BEAT, int((60 / control.bpm) * 1000))
-    pygame.time.set_timer(SUPPOSEDHIT, int((60 / control.bpm) * 1000 * 4 / control.subdivision))
     
 
     ball = control.ball
@@ -173,6 +168,11 @@ def run(settings, selected_song):
     dt = 0
     beats = 1
     nextPaddle = "right"
+    queuedPing = 0
+    ignoreNextCollide = True
+    queuedRandomEvent = False
+
+    print("distance between paddles: " + str(paddles.sprites().__getitem__(1).rect.left -  paddles.sprites().__getitem__(0).rect.right))
 
     while running:
         settings.screen.fill((0, 0, 0))
@@ -188,36 +188,56 @@ def run(settings, selected_song):
                 )
                 for entity in all_sprites:
                     entity.reset()
-                control.bpm = 120
-                control.subdivision = 2
-                ball.bpm = control.bpm
+                control.reset()
+                ignoreNextCollide = True
+                #control.subdivision = 2
+                ball.subdivision = control.subdivision
                 
 
             if event.type == BEAT:
                 beats = beats + 1
+                print("beat: " + str(beats))
+                if queuedRandomEvent and (beats % 4 == 0):
+                    print("starting random event pings next beat")
+                    if control.subdivision == 2:
+                        newSubdivision = 3
+                    elif control.subdivision == 3:
+                        newSubdivision = 2
+                    queuedRandomEvent = False
+                    control.queue_subdivision_change(newSubdivision)
+                    print("new incoming subdivision: " + str(newSubdivision))
+                if queuedPing > 0: # works so long as the first ping is on beat 1 of a measure
+                    tempo_warning_ping.play()
+                    queuedPing = queuedPing - 1
+                    if queuedPing == 1:
+                        ignoreNextCollide = True
+                    if queuedPing == 0: # at the last ping
+                        print("CHANGING SUBDIVISION. new subdivision: " + str(newSubdivision))
+                        control.ball.subdivision = newSubdivision
+                        hit = pygame.event.Event(SUPPOSEDHIT)
+                        pygame.event.post(hit)
+                        pygame.time.set_timer(SUPPOSEDHIT, int((60 / control.bpm) * 1000 * 4 / control.subdivision))
+
+            
             
             if event.type == SUPPOSEDHIT:
-                print("Supposed hit")
-                if (nextPaddle == "right"):
+                    
+                if (nextPaddle == "right" and not ignoreNextCollide):
                     #change ball collide method to only take one paddle and check for y position overlap with that paddle
                     ball.collide(paddles.sprites().__getitem__(1), dt, paddles.sprites().__getitem__(0))
                     nextPaddle = "left"
-                else:
+                elif not ignoreNextCollide:
                     ball.collide(paddles.sprites().__getitem__(0), dt, paddles.sprites().__getitem__(1))
                     nextPaddle = "right"
+                else:
+                    print("Ignoring this collision event")
+                    ignoreNextCollide = False
 
-
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                control.queue_subdivision_change(3)
-            if event.type == PLAYPING:
-                tempo_warning_ping.play()
-            if event.type == CHANGEBPM:
-                control.ball.bpm = control.bpm
             if event.type == CHANGESUBDIVISION:
-                control.ball.subdivision = control.subdivision
+                queuedPing = 5
 
             if event.type == RECURRINGRANDOMEVENT:
+                queuedRandomEvent = True
                 control.random_event()
 
         if state.p2score > 5 or state.p1score > 5:
