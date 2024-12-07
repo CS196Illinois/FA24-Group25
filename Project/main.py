@@ -1,11 +1,12 @@
 import pygame
 from pygame.constants import K_UP, K_DOWN, K_s, K_w
 
-from menu import Settings, MenuButton, ControlsButton, change_controls, SelectMenuButton
+from menu import Settings, MenuButton, ControlsButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
 import kkitson_multi_pong
 import kkitson_pong_split
+import ssutt_acceleration
 import steven43_pong
 import cmt8_musicpong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -18,10 +19,10 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
 pong_button = MenuButton(
-    SCREEN_WIDTH / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
+    SCREEN_WIDTH / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
 )
 foosball_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
+    (SCREEN_WIDTH * 2) / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
 multi_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 4) / 4, kkitson_multi_pong.run, "MULTI!"
@@ -29,8 +30,16 @@ multi_button = MenuButton(
 split_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
 )
-music_button = SelectMenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+#music_button = SelectMenuButton(
+    #(SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+ice_button = MenuButton(
+    (SCREEN_WIDTH * 3) / 6, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
+)
+music_button = MenuButton(
+    (SCREEN_WIDTH * 4) / 6, (SCREEN_HEIGHT * 3) / 4, cmt8_musicpong.run, "MUSIC!"
+)
+ability_button = MenuButton(
+    (SCREEN_WIDTH * 5) / 6, (SCREEN_HEIGHT * 3) / 4, steven43_pong.run, "ABILITIES!"
 )
 
 p1_controls = ControlsButton(
@@ -45,7 +54,9 @@ menu_group.add(pong_button)
 menu_group.add(foosball_button)
 menu_group.add(multi_button)
 menu_group.add(split_button)
+menu_group.add(ice_button)
 menu_group.add(music_button)
+menu_group.add(ability_button)
 menu_group.add(p1_controls)
 menu_group.add(p2_controls)
 
