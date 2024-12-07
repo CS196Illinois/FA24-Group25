@@ -22,6 +22,7 @@ settings = Settings((K_w, K_s), (), screen)
 pong_button = MenuButton(
     SCREEN_WIDTH / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
 )
+
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
@@ -31,6 +32,7 @@ multi_button = MenuButton(
 split_button = MenuButton(
     (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
 )
+
 ice_button = MenuButton(
     (SCREEN_WIDTH * 3) / 5, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
