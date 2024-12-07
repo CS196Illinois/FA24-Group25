@@ -29,15 +29,18 @@ class MusicBall(pygame.sprite.Sprite):
 
         self.angle = math.pi + random.randint(0, 1) * math.pi
 
-        self.x_vel = 387 * self.bpm * self.subdivision / 240
+
+        #self.x_vel = 387 * self.bpm * self.subdivision / 240 / 2
+        self.x_vel = 249
         self.y_vel = 0
 
         self.locked = False
 
     # dt is time since last frame
     def update(self, dt, state):
-        print("dt: " + str(dt) + ". moving ball: " + str(self.x_vel * dt))
+        
         self.rect.move_ip(self.x_vel * dt, self.y_vel * dt)
+
         if self.rect.left < 0:
             state.score(2)
         elif self.rect.right > SCREEN_WIDTH:
@@ -76,7 +79,6 @@ class MusicBall(pygame.sprite.Sprite):
                 distanceToNextPaddle = other_paddle.rect.left - self.rect.left
 
 
-
             # formula for how many pixels the ball has to move per millisecond in order to line up the next hit on the required musical subdivision
             self.x_vel = distanceToNextPaddle * self.bpm * self.subdivision / 240
                 
@@ -94,7 +96,8 @@ class MusicBall(pygame.sprite.Sprite):
         pass
 
     def reset(self):
-        self.x_vel = 387 * self.bpm * self.subdivision / 240
+        #self.x_vel = 387 * self.bpm * self.subdivision / 240 / 2
+        self.x_vel = 249
         self.y_vel = 0
         self.rect.centerx = int(SCREEN_WIDTH / 2)
         self.rect.centery = int(SCREEN_HEIGHT / 2)
@@ -121,7 +124,7 @@ class MusicControl:
         pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 18) * 1000, 1) # sets timer to random time from 10 to 18 seconds
 
     def reset(self):
-        self.subdivision = 2
+        pass
         
 
 
@@ -143,12 +146,12 @@ def run(settings, selected_song):
 
     control = MusicControl(120, 2, selected_song)
     pygame.time.set_timer(RECURRINGRANDOMEVENT, random.randint(10, 15) * 1000, 1) # sets timer to random time from 10 to 18 seconds
-    pygame.time.set_timer(BEAT, int((60 / control.bpm) * 1000))
+    pygame.time.set_timer(BEAT, 500)
     
 
     ball = control.ball
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
-    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, ())
+    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
         f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
@@ -223,10 +226,12 @@ def run(settings, selected_song):
             if event.type == SUPPOSEDHIT:
                     
                 if (nextPaddle == "right" and not ignoreNextCollide):
+                    print("Ball supposed to collide with right paddle at this instant")
                     #change ball collide method to only take one paddle and check for y position overlap with that paddle
                     ball.collide(paddles.sprites().__getitem__(1), dt, paddles.sprites().__getitem__(0))
                     nextPaddle = "left"
                 elif not ignoreNextCollide:
+                    print("Ball supposed to collide with left paddle at this instant")
                     ball.collide(paddles.sprites().__getitem__(0), dt, paddles.sprites().__getitem__(1))
                     nextPaddle = "right"
                 else:
