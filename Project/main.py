@@ -4,6 +4,8 @@ from pygame.constants import K_UP, K_DOWN, K_s, K_w
 from menu import Settings, MenuButton, ControlsButton, change_controls
 import mrodr292_pong
 import mrodr292_foosball
+import kkitson_multi_pong
+import kkitson_pong_split
 import ssutt_acceleration
 import steven43_pong
 import cmt8_musicpong
@@ -22,6 +24,14 @@ pong_button = MenuButton(
 foosball_button = MenuButton(
     (SCREEN_WIDTH * 2) / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
+multi_button = MenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 4) / 4, kkitson_multi_pong.run, "MULTI!"
+)
+split_button = MenuButton(
+    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
+)
+#music_button = SelectMenuButton(
+    #(SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 ice_button = MenuButton(
     (SCREEN_WIDTH * 3) / 6, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
@@ -42,6 +52,8 @@ p2_controls = ControlsButton(
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
 menu_group.add(foosball_button)
+menu_group.add(multi_button)
+menu_group.add(split_button)
 menu_group.add(ice_button)
 menu_group.add(music_button)
 menu_group.add(ability_button)
