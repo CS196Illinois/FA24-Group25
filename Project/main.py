@@ -8,7 +8,6 @@ import kkitson_pong_split
 import ssutt_acceleration
 import steven43_pong
 import cmt8_musicpong
-from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 import plantsPong
 from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -83,3 +82,4 @@ while running:
             (button.rect.left + 10, button.rect.top + 10),
         )
     pygame.display.flip()
+
