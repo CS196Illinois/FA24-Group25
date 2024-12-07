@@ -13,34 +13,36 @@ from pong_common import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FONT = pygame.font.get_default_font()
 
+# made with love from the group 25 team
+
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
 pong_button = MenuButton(
-    SCREEN_WIDTH / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
+    SCREEN_WIDTH / 8, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
 )
 
 foosball_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 6, (SCREEN_HEIGHT * 3) / 4, mrodr292_foosball.run, "FOOSBALL!"
+    (SCREEN_WIDTH * 2) / 8, (SCREEN_HEIGHT * 2) / 4, mrodr292_foosball.run, "FOOSBALL!"
 )
 multi_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 4) / 4, kkitson_multi_pong.run, "MULTI!"
+    (SCREEN_WIDTH * 3) / 8, (SCREEN_HEIGHT * 3) / 4, kkitson_multi_pong.run, "MULTI!"
 )
 split_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 1) / 4, kkitson_pong_split.run, "SPLIT!"
+    (SCREEN_WIDTH * 4) / 8, (SCREEN_HEIGHT * 2) / 4, kkitson_pong_split.run, "SPLIT!"
 )
 
 ice_button = MenuButton(
-    (SCREEN_WIDTH * 3) / 5, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
+    (SCREEN_WIDTH * 5) / 8, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
 )
 music_button = SelectMenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+    (SCREEN_WIDTH * 6) / 8, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
 )
 
 plants_button = MenuButton(
-    (SCREEN_WIDTH * 2) / 3, (SCREEN_HEIGHT * 2) / 4, plantsPong.run, "PLANTS"
+    (SCREEN_WIDTH * 7) / 8, (SCREEN_HEIGHT * 3) / 4, plantsPong.run, "PLANTS!"
 )
 
 p1_controls = ControlsButton(
@@ -49,7 +51,6 @@ p1_controls = ControlsButton(
 p2_controls = ControlsButton(
     (SCREEN_WIDTH * 8) / 10, (SCREEN_HEIGHT * 2) / 10, change_controls, 2
 )
-plants_button = MenuButton(60, 60, plantsPong.run, "PLANTS!")
 
 menu_group = pygame.sprite.Group()
 menu_group.add(pong_button)
@@ -82,4 +83,3 @@ while running:
             (button.rect.left + 10, button.rect.top + 10),
         )
     pygame.display.flip()
-
