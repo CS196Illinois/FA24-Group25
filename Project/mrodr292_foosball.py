@@ -10,19 +10,16 @@ pygame.init()
 def run(settings):
     running = True
     state = GameState()
-    state = GameState()
 
     ball = Ball((255, 255, 255), "Project/media/soccerball.png")
     player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls, size=60)
     player2 = Paddle(
-        (SCREEN_WIDTH * 4) / 10, SCREEN_HEIGHT / 2, settings.p2_controls, size=60
         (SCREEN_WIDTH * 4) / 10, SCREEN_HEIGHT / 2, settings.p2_controls, size=60
     )
     cpu1 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, (), size=30, thresh=800)
     cpu2 = Paddle((SCREEN_WIDTH * 6) / 10, SCREEN_HEIGHT / 2, (), size=30, thresh=500)
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
-        f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
         f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
     )
 
@@ -52,12 +49,10 @@ def run(settings):
             if event.type == SCORE:
                 score_text = score.render(
                     f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
-                    f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
                 )
                 for entity in all_sprites:
                     entity.reset()
 
-        if state.p2score > 5 or state.p1score > 5:
         if state.p2score > 5 or state.p1score > 5:
             running = False
 
