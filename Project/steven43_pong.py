@@ -1,14 +1,14 @@
 import pygame
 import math
 
-from pygame.constants import K_a, K_d
+from pygame.constants import K_a, K_d, K_LEFT, K_RIGHT
 from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
 FONT = pygame.font.get_default_font()
 
 class AbilityBall(Ball):
-    def __init__(self, color):
-        super().__init__(color)
+    def __init__(self, color, image):
+        super().__init__(color, image)
         self.lastHit = None
     
     def update(self, dt, state, pressed_keys):
@@ -38,8 +38,8 @@ class AbilityBall(Ball):
 
     def reset(self):
         super().reset()
+        self.y_vel *= .5
         self.lastHit = None
-        self.y_vel = 0
 
 class AbilityPaddle(Paddle):
     def __init__(self, x_pos, y_pos, controls, abilityControls, size=75, thresh=700):
@@ -50,9 +50,6 @@ class AbilityPaddle(Paddle):
         self.dashSeconds = 10/120
         self.dashDirection = 1
         self.color = (255, 255, 255)
-        #self.trailRect = self.rect
-        #self.trailSurf = pygame.Surface((10, size))
-        #self.lastPositions = []
 
     def update(self, pressed_keys, bally, ballx, dt):
         self.timeSinceDash += 1/120
@@ -98,15 +95,7 @@ class AbilityPaddle(Paddle):
                     self.color = (128, 128, 128)
             self.surf.fill(self.color)
         
-        #self.lastPositions.append(self.rect.centery)
-        #if len(self.lastPositions) > 8:
-        #    self.lastPositions.pop(0)
-        #    self.trailRect = self.trailSurf.get_rect(center=(self.rect.centerx, self.lastPositions[0]))
-        #    self.trailSurf.fill((100, 100, 100))
-        
         self.rect.move_ip(0, self.vel * dt)
-        
-        
 
         if self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
@@ -121,9 +110,9 @@ def run(settings):
     running = True
     state = GameState()
 
-    ball = AbilityBall((255, 255, 255))
+    ball = AbilityBall((255, 255, 255), None)
     player = AbilityPaddle(SCREEN_WIDTH * .03, SCREEN_HEIGHT / 2, settings.p1_controls, (K_d, K_a))
-    player2 = AbilityPaddle(SCREEN_WIDTH * .97, SCREEN_HEIGHT / 2, (), ())
+    player2 = AbilityPaddle(SCREEN_WIDTH * .97, SCREEN_HEIGHT / 2, settings.p2_controls, (K_RIGHT, K_LEFT))
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
         f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
@@ -164,8 +153,7 @@ def run(settings):
 
         for paddle in paddles:
             paddle.update(keys, ball.rect.centery, ball.rect.centerx, dt)
-
-        #settings.screen.blit(player.trailSurf, player.trailRect)
+            
         for entity in all_sprites:
             settings.screen.blit(entity.surf, entity.rect)
 

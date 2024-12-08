@@ -57,6 +57,7 @@ def run(settings):
             running = False
 
         ball.update(dt, state)
+        ball.update(dt, state)
         ball.collide(paddles, dt)
         keys = pygame.key.get_pressed()
 

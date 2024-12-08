@@ -1,70 +1,127 @@
 import pygame
-from pygame.constants import K_UP, K_DOWN, K_s, K_w
 import math
-
+import random
 from pong_common import GameState, Ball, Paddle, SCREEN_HEIGHT, SCREEN_WIDTH, SCORE
 
 FONT = pygame.font.get_default_font()
 
-pygame.init()
+# reset balls with random positions & velocities
+def reset_balls(balls):
+    positions = [
+        (SCREEN_WIDTH / 3, SCREEN_HEIGHT / 2),
+        (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3),
+        (SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3)
+    ]
+    
+    for i, ball in enumerate(balls):
+        ball.rect.center = positions[i]
+        
+        angle_choice = random.randint(0, 1) * math.pi + (math.pi / 3)
+        if random.random() < 0.5:
+            angle_choice = -angle_choice
+        
+        ball.angle = angle_choice
+        ball.x_vel = ball.speed * math.cos(ball.angle)
+        ball.y_vel = ball.speed * math.sin(ball.angle)
+
+# reset paddles to center
+def reset_paddles(player, player2):
+    player.rect.centery = SCREEN_HEIGHT / 2
+    player2.rect.centery = SCREEN_HEIGHT / 2
+
+# ai movement
+def ai_move(player2, balls, dt):
+    ball = balls[0]
+    ball_y = ball.rect.centery
+    ball_y_velocity = ball.y_vel
+
+    # predict ball's y position
+    predicted_y = ball_y + (ball_y_velocity * SCREEN_HEIGHT / 2)
+    predicted_y = max(min(predicted_y, SCREEN_HEIGHT - player2.rect.height / 2), player2.rect.height / 2)
+
+    # move ai to prediction
+    if player2.rect.centery < predicted_y:
+        player2.vel = player2.max_vel
+    elif player2.rect.centery > predicted_y:
+        player2.vel = -player2.max_vel
+    else:
+        player2.vel = 0
 
 def run(settings):
     running = True
+    state = GameState()
 
-    # initialize multiple balls
-    balls = [Ball() for _ in range(3)]
+    # balls
+    balls = [
+        Ball((255, 0, 0), None),
+        Ball((0, 255, 0), None),
+        Ball((0, 0, 255), None)
+    ]
+    
+    reset_balls(balls)
 
-    player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, (K_w, K_s), size=60)
-    player2 = Paddle((SCREEN_WIDTH * 4) / 10, SCREEN_HEIGHT / 2, (K_UP, K_DOWN), size=60)
-    cpu1 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, (), size=30, thresh=800)
-    cpu2 = Paddle((SCREEN_WIDTH * 6) / 10, SCREEN_HEIGHT / 2, (), size=30, thresh=500)
+    player = Paddle(SCREEN_WIDTH / 10, SCREEN_HEIGHT / 2, settings.p1_controls)
+    player2 = Paddle((SCREEN_WIDTH * 9) / 10, SCREEN_HEIGHT / 2, settings.p2_controls)
     score = pygame.font.Font(FONT, 20)
     score_text = score.render(
-        f"{GameState.p1score} - {GameState.p2score}", False, (255, 255, 255)
+        f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
     )
 
     clock = pygame.time.Clock()
 
-    all_sprites = pygame.sprite.Group(*balls, player, player2, cpu1, cpu2)
-    paddles = pygame.sprite.Group(player, player2, cpu1, cpu2)
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
+    all_sprites.add(player2)
+    for ball in balls:
+        all_sprites.add(ball)
+
+    paddles = pygame.sprite.Group()
+    paddles.add(player)
+    paddles.add(player2)
 
     dt = 0
 
     while running:
-        settings.screen.fill((0, 128, 0))
+        settings.screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == SCORE:
                 score_text = score.render(
-                    f"{GameState.p1score} - {GameState.p2score}", False, (255, 255, 255)
+                    f"{state.p1score} - {state.p2score}", False, (255, 255, 255)
                 )
-                for entity in all_sprites:
-                    entity.reset()
+                reset_balls(balls)
+                reset_paddles(player, player2)
 
-        if GameState.p2score > 5 or GameState.p1score > 5:
+        if state.p2score > 5 or state.p1score > 5:
             running = False
-            GameState.reset()
 
-        # update balls
-        for i, ball in enumerate(balls):
-            ball.update(dt)
+        for ball in balls:
+            ball.update(dt, state)
             ball.collide(paddles, dt)
-            
+
             # ball-to-ball collision
-            for j, other_ball in enumerate(balls[i+1:], start=i+1):
-                if ball.rect.colliderect(other_ball.rect):
+            for other_ball in balls:
+                if ball != other_ball and ball.rect.colliderect(other_ball.rect):
+                    offset_x = ball.rect.centerx - other_ball.rect.centerx
+                    offset_y = ball.rect.centery - other_ball.rect.centery
+                    overlap_distance = max(abs(offset_x), abs(offset_y))
+                    if overlap_distance < 2:
+                        overlap_distance = 2
+                    ball.rect.move_ip(offset_x / overlap_distance, offset_y / overlap_distance)
+                    other_ball.rect.move_ip(-offset_x / overlap_distance, -offset_y / overlap_distance)
+
                     ball.x_vel, other_ball.x_vel = other_ball.x_vel, ball.x_vel
                     ball.y_vel, other_ball.y_vel = other_ball.y_vel, ball.y_vel
-                    ball.rect.move_ip(ball.x_vel * dt, ball.y_vel * dt)
-                    other_ball.rect.move_ip(other_ball.x_vel * dt, other_ball.y_vel * dt)
 
-        # update paddle positions based on closest ball
+        if len(player2.controls) == 0:
+            ai_move(player2, balls, dt)
+
         keys = pygame.key.get_pressed()
+
         for paddle in paddles:
-            closest_ball = min(balls, key=lambda b: abs(b.rect.centerx - paddle.rect.centerx))
-            paddle.update(keys, closest_ball.rect.centery, closest_ball.rect.centerx, dt)
+            paddle.update(keys, balls[0].rect.centery, balls[0].rect.centerx, dt)
 
         for entity in all_sprites:
             settings.screen.blit(entity.surf, entity.rect)
