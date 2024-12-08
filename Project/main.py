@@ -21,32 +21,32 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 settings = Settings((K_w, K_s), (), screen)
 
 pong_button = MenuButton(
-    (SCREEN_WIDTH * 1) / 8, (SCREEN_HEIGHT * 3) / 4, mrodr292_pong.run, "PONG!"
+    (SCREEN_WIDTH * 1) / 8, (SCREEN_HEIGHT * 8) / 10, mrodr292_pong.run, "PONG!"
 )
 
 foosball_button = MenuButton(
-    (SCREEN_WIDTH * 1.75) / 8, (SCREEN_HEIGHT * 2) / 4, mrodr292_foosball.run, "FOOSBALL!"
+    (SCREEN_WIDTH * 1) / 8, (SCREEN_HEIGHT * 5) / 10, mrodr292_foosball.run, "FOOSBALL!"
 )
 multi_button = MenuButton(
-    (SCREEN_WIDTH * 3) / 8, (SCREEN_HEIGHT * 3) / 4, kkitson_multi_pong.run, "MULTI!"
+    (SCREEN_WIDTH * 3) / 8, (SCREEN_HEIGHT * 8) / 10, kkitson_multi_pong.run, "MULTI!"
 )
 split_button = MenuButton(
-    (SCREEN_WIDTH * 3.25) / 8, (SCREEN_HEIGHT * 2) / 4, kkitson_pong_split.run, "SPLIT!"
+    (SCREEN_WIDTH * 3) / 8, (SCREEN_HEIGHT * 5) / 10, kkitson_pong_split.run, "SPLIT!"
 )
 
 ice_button = MenuButton(
-    (SCREEN_WIDTH * 5) / 8, (SCREEN_HEIGHT * 3) / 4, ssutt_acceleration.run, "ICE!"
+    (SCREEN_WIDTH * 5) / 8, (SCREEN_HEIGHT * 8) / 10, ssutt_acceleration.run, "ICE!"
 )
 music_button = SelectMenuButton(
-    (SCREEN_WIDTH * 4.75) / 8, (SCREEN_HEIGHT * 2) / 4, cmt8_musicpong.run, "MUSIC!", 0
+    (SCREEN_WIDTH * 5) / 8, (SCREEN_HEIGHT * 5) / 10, cmt8_musicpong.run, "MUSIC!", 0
 )
 
 plants_button = MenuButton(
-    (SCREEN_WIDTH * 7) / 8, (SCREEN_HEIGHT * 3) / 4, plantsPong.run, "PLANTS!"
+    (SCREEN_WIDTH * 7) / 8, (SCREEN_HEIGHT * 8) / 10, plantsPong.run, "PLANTS!"
 )
 
 ability_button = MenuButton(
-    (SCREEN_WIDTH * 6.25) / 8, (SCREEN_HEIGHT * 2) / 4, steven43_pong.run, "ABILITY!"
+    (SCREEN_WIDTH * 7) / 8, (SCREEN_HEIGHT * 5) / 10, steven43_pong.run, "ABILITY!"
 )
 
 p1_controls = ControlsButton(
